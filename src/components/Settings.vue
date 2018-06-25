@@ -1,21 +1,26 @@
 <template>
 <el-container>
-    <el-header class="main-header">{{header}}</el-header>
+    <el-header class="main-header">
+      <img width="32px" height="32px" :src="logo"/><div style="margin:5px">{{this.$props.id}}</div>
+      </el-header>
     <el-main>
         <el-tabs v-model="activeName">
-            <el-tab-pane label="Signals" name="first">
+            <el-tab-pane name="first">
+              <span slot="label"><i class="fas fa-signature"></i> Signals</span>
               <Signals v-if="dataLoaded" :settings="settings" v-on:settingChanged="store" :transactionCurrencies="transaction_currencies" />
             </el-tab-pane>
-            <el-tab-pane label="General" name="second">
-              <Notifications v-if="dataLoaded" :settings="settings" />
+            <el-tab-pane name="second">
+              <span slot="label"><i class="el-icon-bell"></i> Notifications</span>
+              <Notifications v-if="dataLoaded" :settings="settings" v-on:settingChanged="store" />
             </el-tab-pane>
-            <el-tab-pane label="Subscriptions" name="third">
+            <el-tab-pane name="third">
+              <span slot="label"><i class="fas fa-wallet"></i> Subscription</span>
               <Subscription v-if="dataLoaded" :settings="settings" />
             </el-tab-pane>
         </el-tabs>
     </el-main>
     <el-footer>
-      <el-button round class="save-button" v-bind:type="!showError ? 'primary' : 'danger'"  @click="save" :disabled="showLoading">
+      <el-button round class="save-button" v-bind:type="!showError && !showSuccess ? 'primary' : (showError ?'danger' : 'success')"  @click="save" :disabled="showLoading">
             Save
             <i v-show="showLoading" class="el-icon-loading" />
             <i v-show="showError" class="el-icon-error" />
@@ -27,7 +32,7 @@
 import Signals from "./Signals";
 import Notifications from "./Notifications";
 import Subscription from "./Subscription";
-import { setTimeout } from "timers";
+import logo from "../assets/itf.jpg";
 
 const serviceEndpoint = process.env.ITT_NODE_SERVICES;
 const apiKey = process.env.NODE_SVC_API_KEY;
@@ -47,11 +52,12 @@ export default {
   props: ["id"],
   data() {
     return {
+      logo: logo,
       showLoading: false,
       showSuccess: false,
       showError: false,
       dataLoaded: false,
-      header: " User " + this.id + " Settings",
+      userID: this.id,
       activeName: "first",
       transaction_currencies: [],
       settings: {}
@@ -148,11 +154,11 @@ function loadUserSettings(chat_id) {
 </script>
 <style>
 .el-header {
-  height: 20px !important;
-  /* background: lightblue; */
-  margin: 10px;
+  padding: 10px;
+  height: 40px !important;
   font-size: large;
   font-weight: 600;
+  display: inline-flex;
 }
 
 .el-tabs__header {
@@ -163,4 +169,5 @@ function loadUserSettings(chat_id) {
   width: 200px;
   margin: 10px;
 }
+
 </style>

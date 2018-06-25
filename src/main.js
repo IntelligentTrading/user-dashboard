@@ -2,18 +2,46 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Vuex from 'vuex'
 import App from './App'
-import Login from './components/Login'
-import Settings from './components/Settings'
+import Main from './components/Main'
+import Subscription from './components/Subscription'
+import Wizard from './components/Wizard'
+import Coins from './components/Coins'
 import ErrorPage from './components/ErrorPage'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import VueClipboard from 'vue-clipboard2'
 
 Vue.use(VueRouter)
 Vue.use(ElementUI)
+Vue.use(VueClipboard)
+Vue.use(Vuex)
 
 Vue.config.productionTip = false
 
+const store = new Vuex.Store({
+  state: {
+    telegram_chat_id: 0,
+    settings: undefined,
+    all_transaction_currencies: [],
+    isModified: false
+  },
+  mutations: {
+    telegramId(state, id) {
+      state.telegram_chat_id = id
+    },
+    settings(state, settings) {
+      state.settings = settings
+    },
+    all_transaction_currencies(state, transaction_currencies) {
+      state.all_transaction_currencies = transaction_currencies
+    },
+    setModified(state, modified) {
+      state.isModified = modified
+    }
+  }
+})
 
 const router = new VueRouter({
   routes: [
@@ -23,15 +51,25 @@ const router = new VueRouter({
       props: true
     },
     {
-      path: '/login/:id',
-      component: Login,
+      path: '/main/:id',
+      component: Main,
       props: true
     },
     {
-      path: '/settings/:id',
-      component: Settings,
+      path: '/Subscription',
+      component: Subscription,
+      props: true
+    },
+    {
+      path: '/Wizard',
+      component: Wizard,
+      props: true
+    },
+    {
+      path: '/Coins',
+      component: Coins,
       props: true,
-      name: 'Settings'
+      name: 'Coins'
     }
   ]
 })
@@ -39,6 +77,7 @@ const router = new VueRouter({
 /* eslint-disable no-new */
 new Vue({
   router,
+  store,
   el: '#main',
   components: { App },
   template: '<App/>',

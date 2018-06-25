@@ -4,11 +4,14 @@
         <img class="animate-flicker" width="150px" :src="logo"/>
     </div>
     <router-view v-on:loaded="closeLoad"></router-view>
+    <el-footer>
+            <el-button :disabled="!this.$store.state.isModified" size="default" type="primary" style="width:100%" round>SAVE</el-button>
+        </el-footer>
   </div>
 </template>
 
 <script>
-import Settings from "./components/Settings";
+import Main from "./components/Main";
 import logo from "./assets/itf.jpg";
 
 var loading = null;
@@ -16,7 +19,7 @@ var loading = null;
 export default {
   name: "App",
   components: {
-    Settings
+    Main
   },
   data() {
     return {
@@ -26,7 +29,6 @@ export default {
   },
   methods: {
     closeLoad: function() {
-      console.log('OK close')
       this.showModal = false;
     }
   }
@@ -34,6 +36,11 @@ export default {
 </script>
 
 <style>
+
+li a {
+    text-decoration: none;
+    }
+    
 #wow {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -53,6 +60,18 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+
+
+.el-footer {
+  height: 60px;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  margin: 0px;
+  padding: 10px;
+  left: 0px;
 }
 
 @keyframes flickerAnimation {
@@ -104,5 +123,18 @@ export default {
   -moz-animation: flickerAnimation 2s infinite;
   -o-animation: flickerAnimation 2s infinite;
   animation: flickerAnimation 2s infinite;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .25s;
+}
+
+.fade-enter-active {
+  transition-delay: .25s;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0
 }
 </style>

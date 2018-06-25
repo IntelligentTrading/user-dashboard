@@ -1,8 +1,8 @@
 <template>
 <el-container>
     <el-main>
-            <div slot="header" class="card-header">Coins</div>
-            <el-input size=mini style="margin-bottom:10px" v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
+      <div class="option-label">Trading Pair</div>
+            <el-input size=medium style="margin-bottom:10px; border:transparent" v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
             <div class="coin-table">
               <el-row :gutter="24"  v-for="(tc,index) in filteredTransactionCurrencies" :class="{'even-row': index % 2 === 0}" v-bind:key="tc.symbol" style="text-align:left">
                 <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="14" v-text="tc.name"></el-col>
@@ -11,24 +11,17 @@
               </el-row>
             </div>
             <hr style="opacity:0.2;" />
-            <div style="display:inline-flex; margin-left:20px">            
-            <el-checkbox-group v-model=userSettings.counter_currencies size="medium">
-                <el-checkbox-button v-for="cc in allCounterCurrencies" :disabled="!cc.enabled" :label="cc.symbol" :key="cc.index" @change="onSettingsChanged('counter_currencies',userSettings.counter_currencies)">{{cc.symbol}}</el-checkbox-button>
+            <div style="display:inline-flex; margin-bottom:10px">            
+            <el-checkbox-group v-model=userSettings.counter_currencies size="default">
+                <el-checkbox-button v-for="cc in allCounterCurrencies" :disabled="!cc.enabled" :label="cc.symbol" :key="cc.index" @change="onSettingsChanged('counter_currencies',userSettings.counter_currencies)">{{'alt / '+cc.symbol}}</el-checkbox-button>
             </el-checkbox-group>
-            <el-popover
-                    placement="top-start"
-                    title="Signals settings"
-                    width="200"
-                    trigger="click"
-                    content="Select the alt/currency trading pairs">
-                    <i slot="reference" class="el-icon-question" style="margin:5px" size="mini"></i>
-                </el-popover>
             </div>
+            <div class="option-label">Risk settings</div>
             <el-row :gutter="20">
-                 <el-radio-group v-model="userSettings.horizon" size="medium" @change="onSettingsChanged('horizon',userSettings.horizon)" style="margin-top: 20px;">
-                    <el-radio-button label="High Risk"></el-radio-button>
-                    <el-radio-button label="Medium Risk"></el-radio-button>
-                    <el-radio-button label="Low Risk"></el-radio-button>
+                 <el-radio-group v-model="userSettings.horizon" size="default" @change="onSettingsChanged('horizon',userSettings.horizon)">
+                    <el-radio-button label="High risk"></el-radio-button>
+                    <el-radio-button label="Medium risk"></el-radio-button>
+                    <el-radio-button label="Low risk"></el-radio-button>
                 </el-radio-group>
         </el-row>
     </el-main>
@@ -56,7 +49,7 @@ const counter_currencies = [
 ];
 
 var horizons = ["short", "medium", "long"];
-var risks = ["High Risk", "Medium Risk", "Low Risk"];
+var risks = ["High risk", "Medium risk", "Low risk"];
 
 function transformFromHorizon(hrz) {
   return risks[horizons.indexOf(hrz)];
@@ -138,10 +131,6 @@ export default {
   display: flex;
 }
 
-.el-dropdown-link {
-  cursor: pointer;
-  color: #409eff;
-}
 .el-icon-arrow-down {
   font-size: 12px;
 }
@@ -160,7 +149,7 @@ export default {
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  height: 250px;
+  height: 230px;
 }
 
 .isNotSelected {
@@ -171,5 +160,13 @@ export default {
 .switch-col {
   padding: 0px;
   text-align: end;
+}
+
+.option-label {
+  font-size: small;
+  font-weight: 600;
+  font-family: unset;
+  text-align: left;
+  color: steelblue;
 }
 </style>

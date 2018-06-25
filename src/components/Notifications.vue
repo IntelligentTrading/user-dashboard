@@ -1,30 +1,29 @@
 <template>
-<el-container>
+<el-container style="margin:10px">
     <el-main>
-        <el-card>
-            <div slot="header" class="card-header">Notifications</div>
-        <el-row :gutter="20">
-            <el-col class="setting-label" :xs="18" :md="8">Alerts</el-col>
-            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.alerts_on"></el-switch></el-col>
+      <div class="option-label">General</div>
+        <el-row :gutter="24">
+            <el-col class="setting-label" :xs="20" :md="8">Alerts</el-col>
+            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.alerts_on" @change="onSettingsChanged('is_muted',!userSettings.alerts_on)"></el-switch></el-col>
         </el-row>
-        <el-row :gutter="20">
-            <el-col class="setting-label"  :xs="18" :md="8">Crowd Sentiment</el-col>
-            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.is_crowd_enabled"></el-switch></el-col>
+        <el-row :gutter="24">
+            <el-col class="setting-label"  :xs="20" :md="8">Crowd Sentiment</el-col>
+            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.is_crowd_enabled" @change="onSettingsChanged('is_crowd_enabled',userSettings.is_crowd_enabled)"></el-switch></el-col>
         </el-row>
-        <el-row :gutter="20">
-            <el-col class="setting-label"  :xs="18" :md="8">RSI</el-col>
+        <hr style="opacity:0.2;" />
+        <div class="option-label">Technical Analysis</div>
+        <el-row :gutter="24">
+            <el-col class="setting-label"  :xs="20" :md="8">RSI</el-col>
             <el-col :xs="2" :md="2"><el-switch v-model="userSettings.rsi"></el-switch></el-col>
         </el-row>
-        <el-row :gutter="20">
-            <el-col class="setting-label"  :xs="18" :md="8">Ichimoku</el-col>
+        <el-row :gutter="24">
+            <el-col class="setting-label"  :xs="20" :md="8">Ichimoku</el-col>
             <el-col :xs="2" :md="2"><el-switch v-model="userSettings.ichimoku"></el-switch></el-col>
         </el-row>
-        </el-card>
     </el-main>
 </el-container>
 </template>
 <script>
-
 export default {
   name: "Notifications",
   props: ["settings"],
@@ -34,11 +33,16 @@ export default {
         rsi: false,
         ichimoku: false,
         alerts_on: !this.$props.settings.is_muted,
-        is_crowd_enabled: this.$props.settings.is_crowd_enabled,
+        is_crowd_enabled: this.$props.settings.is_crowd_enabled
       }
     };
   },
   methods: {
+    onSettingsChanged: function(property, state) {
+      var propertyValue = state;
+      console.log(`Sending ${property}:${propertyValue}`);
+      this.$emit("settingChanged", property, propertyValue);
+    }
   }
 };
 </script>
@@ -75,11 +79,21 @@ export default {
 
 .el-footer {
   height: 60px;
-    position: fixed;
-    bottom: 0px;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    left: 0px;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  left: 0px;
+}
+
+.option-label {
+  font-size: small;
+  font-weight: 600;
+  font-family: unset;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 15px;
+  color: steelblue;
 }
 </style>
