@@ -1,90 +1,80 @@
 <template>
-<el-container style="margin:10px">
-    <el-main>
-      <div class="option-label">General</div>
-        <el-row :gutter="24">
-            <el-col class="setting-label" :xs="20" :md="8">Alerts</el-col>
-            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.alerts_on" @change="onSettingsChanged('is_muted',!userSettings.alerts_on)"></el-switch></el-col>
-        </el-row>
-        <el-row :gutter="24">
-            <el-col class="setting-label"  :xs="20" :md="8">Crowd Sentiment</el-col>
-            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.is_crowd_enabled" @change="onSettingsChanged('is_crowd_enabled',userSettings.is_crowd_enabled)"></el-switch></el-col>
+  <el-container>
+        <el-header>
+            <Header />
+        </el-header>
+        <el-main style="padding:10px">
+          <div class="option-label">General</div>
+          <el-row :gutter="24" class="indicator" v-for="generalAlert in this.generalAlerts" v-bind:key="generalAlert.label">
+            <el-col class="setting-label" :span="20">{{generalAlert.label}}</el-col>
+            <el-col :span="4"><el-switch v-model="generalAlert.enabled" @change="save" ></el-switch></el-col>
         </el-row>
         <hr style="opacity:0.2;" />
-        <div class="option-label">Technical Analysis</div>
-        <el-row :gutter="24">
-            <el-col class="setting-label"  :xs="20" :md="8">RSI</el-col>
-            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.rsi"></el-switch></el-col>
+      <div class="option-label">Indicators</div>
+      <el-row :gutter="24" :class="[{disabledIndicator: !indicator.available},'indicator']" v-for="indicator in this.indicators" v-bind:key="indicator.name">
+            <el-col class="setting-label" :span="20">{{indicator.label}} <el-button type="text" class="proTag" size=mini v-show="!indicator.available" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
+            <el-col :span="4"><el-switch :disabled="!indicator.available" v-model="indicator.enabled" @change="save"></el-switch></el-col>
         </el-row>
-        <el-row :gutter="24">
-            <el-col class="setting-label"  :xs="20" :md="8">Ichimoku</el-col>
-            <el-col :xs="2" :md="2"><el-switch v-model="userSettings.ichimoku"></el-switch></el-col>
-        </el-row>
+        <hr style="opacity:0.2;" />
     </el-main>
 </el-container>
 </template>
 <script>
+import Header from "./Header.vue";
 export default {
   name: "Notifications",
-  props: ["settings"],
   data() {
     return {
-      userSettings: {
-        rsi: false,
-        ichimoku: false,
-        alerts_on: !this.$props.settings.is_muted,
-        is_crowd_enabled: this.$props.settings.is_crowd_enabled
-      }
+      generalAlerts: [
+        {
+          label: "Mute",
+          name: "is_muted",
+          enabled: this.$store.state.settings.is_muted
+        },
+        {
+          label: "Crowd Sentiment",
+          name: "is_crowd_enabled",
+          enabled: this.$store.state.settings.is_crowd_enabled
+        }
+      ],
+      indicators: this.$store.state.settings.indicators
     };
   },
   methods: {
-    onSettingsChanged: function(property, state) {
-      var propertyValue = state;
-      console.log(`Sending ${property}:${propertyValue}`);
-      this.$emit("settingChanged", property, propertyValue);
+    save: function() {
+      var settings = {};
+      this.generalAlerts.forEach(alert => {
+        settings[alert.name] = alert.enabled;
+      });
+
+      settings.indicators = this.indicators;
+      this.$store.dispatch("save", {
+        chat_id: this.$store.state.telegram_chat_id,
+        settings: settings
+      });
+    },
+    goToUpgrade() {
+      this.$router.push("/Subscription");
     }
+  },
+  components: {
+    Header
   }
 };
 </script>
 <style>
-.el-main {
-  padding: 5px;
+.proTag {
+  margin-left: 10px;
+  border-radius: 20px;
 }
 
-.el-card {
-  margin: 5px;
-}
-
-.el-card.is-always-shadow,
-.el-card.is-hover-shadow:focus,
-.el-card.is-hover-shadow:hover {
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
-}
-
-.el-card__header {
-  padding: 5px;
+.indicator {
+  margin-top: 10px;
 }
 
 .setting-label {
-  display: flex;
-}
-
-.el-dropdown-link {
-  cursor: pointer;
-  color: #409eff;
-}
-.el-icon-arrow-down {
-  font-size: 12px;
-}
-
-.el-footer {
-  height: 60px;
-  position: fixed;
-  bottom: 0px;
-  width: 100%;
-  margin: 0px;
-  padding: 0px;
-  left: 0px;
+  text-align: left;
+  display: block;
 }
 
 .option-label {
@@ -95,5 +85,9 @@ export default {
   text-align: left;
   margin-bottom: 15px;
   color: steelblue;
+}
+
+.disabledIndicator {
+  color: lightgrey;
 }
 </style>

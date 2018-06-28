@@ -1,24 +1,13 @@
 <template>
   <el-container>
         <el-header>
-            <el-row style="margin-top:10px">
-                <el-col :span="2">
-                  <div @click="goBack"><i class="el-icon-arrow-left el-icon-left" style="color:whitesmoke"></i>
-                  </div>
-                  </el-col>
-                <el-col :span="20" >SETTINGS</el-col>
-                <el-col :span="2">
-                </el-col>
-            </el-row>
+            <Header />
             </el-header>
         <el-main style="padding:0px">
           <el-row>
-            <el-col :span=16>
+            <el-col :span=24>
           <el-input size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
             </el-col>
-          <el-col :span="8">
-          <el-button size="mini" style="margin-top:15px" round>select all</el-button>
-          </el-col>
           </el-row>
             <div class="coin-table">
               <el-row :gutter="24" style="display:inline" v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
@@ -28,37 +17,71 @@
               </el-row>
             </div>
             <hr class="settings-separator" />
+            <el-row>
+              <el-col :offset="2" :span=12>
+                <el-button size="default" style="width:100%" type="success" round @click="selectAllCoins">Select all</el-button>
+              </el-col>
+            <el-button size="default" type="info" round @click="resetCoinsToDefault">Reset</el-button>
+            </el-row>
         </el-main>
   </el-container>
 </template>
 <script>
-import _ from 'lodash'
+import _ from "lodash";
+import Header from "./Header.vue";
 
 export default {
-  data(){
+  data: function(){
     return {
-      search: ""
-    }
+      search: "",
+    };
   },
   methods: {
     goBack: function() {
       this.$router.go(-1);
     },
-    onChange: function(symbol,enabled){
-      this.$store.commit("setModified", true);
-      if (enabled) this.$store.state.settings.transaction_currencies.push(symbol);
+    selectAllCoins: function() {
+      this.$store.state.settings.transaction_currencies = this.$store.state.all_transaction_currencies.map(
+        atc => atc.symbol
+      );
+
+      this.$store.dispatch("save", {
+        chat_id: this.$store.state.telegram_chat_id,
+        settings: this.$store.state.settings
+      });
+      //this.$forceUpdate();
+    },
+    resetCoinsToDefault: function() {
+      this.$store.dispatch("resetCoinsToDefault");
+      this.$forceUpdate()
+    },
+    onChange: function(symbol, enabled) {
+      if (enabled)
+        this.$store.state.settings.transaction_currencies.push(symbol);
       else
         this.$store.state.settings.transaction_currencies = this.$store.state.settings.transaction_currencies.filter(
           t => t != symbol
         );
+
+      this.$store.dispatch("save", {
+        chat_id: this.$store.state.telegram_chat_id,
+        settings: this.$store.state.settings
+      });
+
+      this.$forceUpdate();
     }
   },
   computed: {
+    resetting: function(){
+      return false
+    },
     filteredTransactionCurrencies: function() {
       var allTransactionCurrencies = _.sortBy(
         this.$store.state.all_transaction_currencies.map(tc => {
           tc.enabled =
-            this.$store.state.settings.transaction_currencies.indexOf(tc.symbol) > -1;
+            this.$store.state.settings.transaction_currencies.indexOf(
+              tc.symbol
+            ) > -1;
           return tc;
         }),
         t => {
@@ -74,17 +97,19 @@ export default {
           )
         : allTransactionCurrencies;
     }
+  },
+  components: {
+    Header
   }
 };
 </script>
 <style>
-
-.el-input__inner{
+.el-input__inner {
   border-radius: 0px;
-  border: 0px
+  border: 0px;
 }
 
-.el-input--medium .el-input__inner{
+.el-input--medium .el-input__inner {
   height: 60px;
 }
 .coin-table {

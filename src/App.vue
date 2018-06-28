@@ -4,9 +4,6 @@
         <img class="animate-flicker" width="150px" :src="logo"/>
     </div>
     <router-view v-on:loaded="closeLoad"></router-view>
-    <el-footer>
-            <el-button :disabled="!this.$store.state.isModified" size="default" type="primary" style="width:100%" round>SAVE</el-button>
-        </el-footer>
   </div>
 </template>
 
@@ -36,11 +33,10 @@ export default {
 </script>
 
 <style>
-
 li a {
-    text-decoration: none;
-    }
-    
+  text-decoration: none;
+}
+
 #wow {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -61,8 +57,6 @@ li a {
   justify-content: center;
   align-items: center;
 }
-
-
 
 .el-footer {
   height: 60px;
@@ -125,16 +119,18 @@ li a {
   animation: flickerAnimation 2s infinite;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition-property: opacity;
-  transition-duration: .25s;
+  transition-duration: 0.25s;
 }
 
 .fade-enter-active {
-  transition-delay: .25s;
+  transition-delay: 0.25s;
 }
 
-.fade-enter, .fade-leave-active {
-  opacity: 0
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
 }
 </style>

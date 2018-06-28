@@ -6,12 +6,14 @@ import Vuex from 'vuex'
 import App from './App'
 import Main from './components/Main'
 import Subscription from './components/Subscription'
+import Notifications from './components/Notifications'
 import Wizard from './components/Wizard'
 import Coins from './components/Coins'
 import ErrorPage from './components/ErrorPage'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueClipboard from 'vue-clipboard2'
+import db from './db'
 
 Vue.use(VueRouter)
 Vue.use(ElementUI)
@@ -24,8 +26,7 @@ const store = new Vuex.Store({
   state: {
     telegram_chat_id: 0,
     settings: undefined,
-    all_transaction_currencies: [],
-    isModified: false
+    all_transaction_currencies: []
   },
   mutations: {
     telegramId(state, id) {
@@ -37,11 +38,38 @@ const store = new Vuex.Store({
     all_transaction_currencies(state, transaction_currencies) {
       state.all_transaction_currencies = transaction_currencies
     },
-    setModified(state, modified) {
-      state.isModified = modified
+    indicators(state, indicators) {
+      state.indicators = indicators
+    }
+  },
+  actions: {
+    save(context, payload) {
+      return db.save(payload.chat_id, payload.settings).then((response) => {
+        console.log('Settings saved')
+        return response.json().then(updatedUser => {
+          context.commit("settings", updatedUser.settings)
+        }).catch(err => {
+          alert('Error saving settings...')
+          console.log(err)
+        }).then(() => {
+          vm.$emit('save', false)
+        })
+      })
+    },
+    resetCoinsToDefault(context) {
+      return db.resetCoins(context.state.telegram_chat_id).then((response) => {
+        console.log('Settings saved')
+        return response.json().then(updatedUser => {
+          context.commit("settings", updatedUser.settings)
+        }).catch(err => {
+          alert('Error saving settings...')
+          console.log(err)
+        }).then(() => vm.$emit('reset', false))
+      })
     }
   }
 })
+
 
 const router = new VueRouter({
   routes: [
@@ -70,12 +98,18 @@ const router = new VueRouter({
       component: Coins,
       props: true,
       name: 'Coins'
+    },
+    {
+      path: '/Notifications',
+      component: Notifications,
+      props: true,
+      name: 'Notifications'
     }
   ]
 })
 
 /* eslint-disable no-new */
-new Vue({
+var vm = new Vue({
   router,
   store,
   el: '#main',

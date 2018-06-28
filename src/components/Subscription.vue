@@ -1,15 +1,7 @@
 <template>
 <el-container>
   <el-header>
-            <el-row style="margin-top:10px">
-                <el-col :span="2">
-                  <div @click="goBack"><i class="el-icon-arrow-left el-icon-left" style="color:whitesmoke"></i>
-                  </div>
-                  </el-col>
-                <el-col :span="20" >SETTINGS</el-col>
-                <el-col :span="2">
-                </el-col>
-            </el-row>
+            <Header />
             </el-header> 
     <el-main>
         <qrcode class="qrcode" v-bind:text="address"/>
@@ -24,10 +16,11 @@
 </template>
 <script>
 import qrcode from "vue-qrcode-component";
+import Header from "./Header";
 
 export default {
   name: "Subscription",
-  components: { qrcode },
+  components: { qrcode, Header },
   data() {
     return {
       address: this.$store.state.settings.ittWalletReceiverAddress
