@@ -22,7 +22,7 @@
             <el-radio-group v-model="settings.horizon" size="default" @change="save">
                     <el-radio-button label="short">High Risk</el-radio-button>
                     <el-radio-button label="medium">Medium Risk</el-radio-button>
-                    <el-radio-button label="high">Low Risk</el-radio-button>
+                    <el-radio-button label="long">Low Risk</el-radio-button>
                 </el-radio-group>
             <div class="settings-label">Notifications Settings</div>
             <settings-button actionTitle="Edit" subtitle="Active alerts and indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
