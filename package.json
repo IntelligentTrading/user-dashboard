@@ -1,12 +1,12 @@
 {
   "name": "dashboard",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "ITF User Settings Web App",
   "author": "francesco@intelligenttrading.org",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --public itfsettings.localtunnel.me:80",
-    "start": "npm run dev",
+    "start": "node server.js",
     "build": "node build/build.js"
   },
   "dependencies": {
