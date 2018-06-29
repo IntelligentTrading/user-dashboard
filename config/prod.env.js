@@ -2,5 +2,5 @@
 module.exports = {
   NODE_ENV: '"production"',
   NODE_SVC_API_KEY: `"${process.env.NODE_SVC_API_KEY}"`,
-  ITT_NODE_SERVICES: `"${process.env.ITT_NODE_SERVICES}/api"` | '"https://intelligenttrading.localtunnel.me/api"',
+  ITT_NODE_SERVICES: `"${process.env.ITT_NODE_SERVICES}/api"`
 }
