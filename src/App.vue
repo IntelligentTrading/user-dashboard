@@ -10,6 +10,7 @@
 <script>
 import Main from "./components/Main";
 import logo from "./assets/itf.jpg";
+import favicon from "./assets/favicon-16x16.png";
 
 var loading = null;
 
@@ -21,7 +22,8 @@ export default {
   data() {
     return {
       showModal: true,
-      logo: logo
+      logo: logo,
+      favicon: favicon
     };
   },
   methods: {
