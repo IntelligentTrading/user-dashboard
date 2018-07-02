@@ -1,7 +1,7 @@
 <template>
 <el-container>
   <el-header>
-            <Header />
+            <Header title="SUBSCRIPTIONS" />
             </el-header> 
     <el-main>
         <qrcode class="qrcode" v-bind:text="address"/>

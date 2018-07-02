@@ -1,14 +1,13 @@
 <template>
   <el-container>
         <el-header>
-            <Header />
+            <Header title="COINS" />
             </el-header>
-        <el-main style="padding:0px">
-          <el-row>
-            <el-col :span=24>
-          <el-input size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
-            </el-col>
+        <el-main>
+          <el-row class="search-row">
+            <el-input size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
           </el-row>
+          <el-row>
             <div class="coin-table">
               <el-row :gutter="24" style="display:inline" v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
                 <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="14" v-text="tc.name" style="text-align:left"></el-col>
@@ -16,14 +15,16 @@
                 <el-col class="switch-col" :span="6"><el-switch v-model="tc.enabled" @change="onChange(tc.symbol,tc.enabled)"/></el-col>
               </el-row>
             </div>
-            <hr class="settings-separator" />
-            <el-row>
+          </el-row>
+        </el-main>
+        <el-footer>
+          <el-row style="margin-top:10px">
               <el-col :offset="2" :span=12>
                 <el-button size="default" style="width:100%" type="success" round @click="selectAllCoins">Select all</el-button>
               </el-col>
             <el-button size="default" type="info" round @click="resetCoinsToDefault">Reset</el-button>
             </el-row>
-        </el-main>
+        </el-footer>
   </el-container>
 </template>
 <script>
@@ -31,9 +32,9 @@ import _ from "lodash";
 import Header from "./Header.vue";
 
 export default {
-  data: function(){
+  data: function() {
     return {
-      search: "",
+      search: ""
     };
   },
   methods: {
@@ -53,7 +54,7 @@ export default {
     },
     resetCoinsToDefault: function() {
       this.$store.dispatch("resetCoinsToDefault");
-      this.$forceUpdate()
+      this.$forceUpdate();
     },
     onChange: function(symbol, enabled) {
       if (enabled)
@@ -72,8 +73,8 @@ export default {
     }
   },
   computed: {
-    resetting: function(){
-      return false
+    resetting: function() {
+      return false;
     },
     filteredTransactionCurrencies: function() {
       var allTransactionCurrencies = _.sortBy(
@@ -116,7 +117,14 @@ export default {
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 425px;
+  margin-bottom: 80px;
 }
+
+.el-footer {
+  background: white;
+  height: 80px !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 </style>
 

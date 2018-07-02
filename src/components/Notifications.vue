@@ -1,7 +1,7 @@
 <template>
   <el-container>
         <el-header>
-            <Header />
+            <Header title="NOTIFICATIONS" />
         </el-header>
         <el-main style="padding:10px">
           <div class="option-label">General</div>

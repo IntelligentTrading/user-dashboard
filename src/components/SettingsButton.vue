@@ -1,5 +1,5 @@
 <template>
-<div @click="GoTo">
+<div @click="GoTo" class="settings-button">
     <el-row>
                 <el-col :span="2"><i v-bind:class="this.$props.icon"></i></el-col>
                 <el-col :span="16">

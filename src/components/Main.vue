@@ -16,7 +16,7 @@
             <div class="settings-label">Signals Settings</div>
             <settings-button actionTitle="Edit" subtitle="Coin watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
             <el-checkbox-group v-model=settings.counter_currencies size="default">
-                <el-checkbox-button v-for="cc in allCounterCurrencies" :disabled="!cc.enabled" :label="cc.index" :key="cc.index" @change="save">{{'alt / '+cc.symbol}}</el-checkbox-button>
+                <el-checkbox-button v-for="cc in allCounterCurrencies" v-show="cc.enabled" :label="cc.index" :key="cc.index" @change="save">{{'alt / '+cc.symbol}}</el-checkbox-button>
             </el-checkbox-group>
             <div class="settings-label">Trading Settings</div>
             <el-radio-group v-model="settings.horizon" size="default" @change="save">
@@ -191,4 +191,5 @@ export default {
   color: cornflowerblue;
   font-size: small;
 }
+
 </style>

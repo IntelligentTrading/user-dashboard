@@ -37,6 +37,14 @@ li a {
   text-decoration: none;
 }
 
+.settings-button:hover{
+  cursor: pointer;
+}
+
+.el-button:hover{
+  cursor: pointer;
+}
+
 #wow {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
