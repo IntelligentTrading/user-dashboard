@@ -8,6 +8,7 @@ const coreApiKey = process.env.ITT_API_KEY
 
 const readableSettings = [
     { setting: "is_muted", readonly: false },
+    { setting: "is_ITT_team", readonly: true },
     { setting: "is_crowd_enabled", readonly: false },
     { setting: "transaction_currencies", readonly: false },
     { setting: "counter_currencies", readonly: false },
