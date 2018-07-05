@@ -5,7 +5,7 @@
             </el-header>
         <el-main>
           <el-row class="search-row">
-            <el-input style="border:transparent; height:60px" size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
+            <el-input size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Coin" />
           </el-row>
           <el-row>
             <div class="coin-table">
@@ -117,6 +117,11 @@ export default {
   background: white;
   height: 80px !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.el-input--medium .el-input__inner{
+  height: 60px !important;
+  
 }
 
 </style>

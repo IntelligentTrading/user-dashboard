@@ -28,7 +28,6 @@ export default {
   props: ["subtitle", "currentOptionValue", "icon", "to", "actionTitle"],
   data() {
     return {
-      userID: this.id,
       isNavigable: this.to != undefined
     };
   },
@@ -50,6 +49,7 @@ export default {
 .icons {
   color: cornflowerblue;
   vertical-align: text-bottom;
+  margin-right: 10px
 }
 
 .arrow-icon {

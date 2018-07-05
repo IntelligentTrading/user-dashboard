@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import App from './App'
+import Me from './components/Me'
 import Main from './components/Main'
 import Subscription from './components/Subscription'
 import Notifications from './components/Notifications'
@@ -30,6 +31,7 @@ const store = new Vuex.Store({
   },
   mutations: {
     telegramId(state, id) {
+      console.log('saving id...')
       state.telegram_chat_id = id
     },
     settings(state, settings) {
@@ -40,6 +42,9 @@ const store = new Vuex.Store({
     },
     indicators(state, indicators) {
       state.indicators = indicators
+    },
+    itt_usd_rate(state,itt_usd_rate){
+      state.itt_usd_rate = itt_usd_rate
     }
   },
   actions: {
@@ -74,12 +79,12 @@ const store = new Vuex.Store({
 const router = new VueRouter({
   routes: [
     {
-      path: '/',
-      component: ErrorPage,
+      path: '/me/:token',
+      component: Me,
       props: true
     },
     {
-      path: '/main/:id',
+      path: '/main/:token/:telegram_chat_id',
       component: Main,
       props: true
     },

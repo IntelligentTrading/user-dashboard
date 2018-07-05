@@ -10,7 +10,7 @@
             </div>-->
         <el-main>
             <div class="settings-label">User Details</div>
-            <settings-button subtitle="Telegram Id" v-bind:currentOptionValue=this.id icon="fab fa-telegram-plane icons"></settings-button>
+            <settings-button subtitle="Telegram Id" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
             <settings-button actionTitle="Upgrade" subtitle="Subscription Plan" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
             <settings-button actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <div class="settings-label">Signals Settings</div>
@@ -34,12 +34,13 @@ import logo from "../assets/itf.jpg";
 import SettingsButton from "./SettingsButton";
 import moment from "moment";
 import db from "../db";
+import util from "../util";
 
 var loading = null;
 
 export default {
   name: "Main",
-  props: ["id"],
+  props: ["token", "telegram_chat_id"],
   data() {
     return {
       logo: logo,
@@ -47,7 +48,6 @@ export default {
       showSuccess: false,
       showError: false,
       dataLoaded: false,
-      userID: this.id,
       all_transaction_currencies: [],
       settings: { transaction_currencies: [] },
       allCounterCurrencies: db.COUNTER_CURRENCIES,
@@ -62,13 +62,15 @@ export default {
     if (!userSettings) {
       var fulfillments = await Promise.all([
         db.loadTransactionCurrencies(),
-        db.loadUserSettings(this.$props.id),
-        db.loadIndicators()
+        db.loadUserSettings(this.$props.telegram_chat_id),
+        db.loadIndicators(),
+        db.loadIttPrice()
       ]);
       this.all_transaction_currencies = fulfillments[0];
       var user = fulfillments[1];
       userSettings = user.settings;
       this.$store.commit("indicators", fulfillments[2]);
+      this.$store.commit("itt_usd_rate", fulfillments[3]);
     }
 
     this.settings = {};
@@ -79,7 +81,6 @@ export default {
     });
 
     this.dataLoaded = true;
-    this.$store.commit("telegramId", this.id);
     this.$store.commit("settings", this.settings);
     this.$store.commit(
       "all_transaction_currencies",
@@ -91,7 +92,7 @@ export default {
     save: function() {
       this.inProgress = true;
       this.$store.dispatch("save", {
-        chat_id: this.id,
+        chat_id: this.$props.telegram_chat_id,
         settings: this.settings
       });
       this.$forceUpdate();
@@ -104,22 +105,7 @@ export default {
   },
   computed: {
     subscription: function() {
-      if (
-        this.$store.state.settings &&
-        this.$store.state.settings.subscriptions
-      ) {
-        var paidDaysLeft =
-          -1 *
-          moment().diff(this.$store.state.settings.subscriptions.paid, "days");
-        var betaDaysLeft =
-          -1 *
-          moment().diff(this.$store.state.settings.subscriptions.beta, "days");
-        return paidDaysLeft > 0
-          ? "Starter"
-          : betaDaysLeft > 0 ? "FREE+" : "FREE";
-      }
-
-      return "Loading...";
+      return util.subscription(this.$store.state.settings).plan;
     },
     activeIndicators: function() {
       if (this.$store.state.settings) {
@@ -191,5 +177,4 @@ export default {
   color: cornflowerblue;
   font-size: small;
 }
-
 </style>

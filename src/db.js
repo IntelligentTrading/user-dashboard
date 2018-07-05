@@ -2,6 +2,9 @@
 const serviceEndpoint = process.env.ITT_NODE_SERVICES;
 const apiKey = process.env.NODE_SVC_API_KEY;
 
+const coreApiUrl = `https://${process.env.ITT_API_HOST}/v2`
+const coreApiKey = process.env.ITT_API_KEY
+
 const readableSettings = [
     { setting: "is_muted", readonly: false },
     { setting: "is_crowd_enabled", readonly: false },
@@ -35,7 +38,7 @@ function save(chat_id, settings) {
     });
 }
 
-function resetCoins(chat_id){
+function resetCoins(chat_id) {
     return fetch(`${serviceEndpoint}/users/${chat_id}/resetSignals`, {
         method: "PUT",
         headers: new Headers({
@@ -93,6 +96,18 @@ function loadIndicators() {
     });
 }
 
+function loadIttPrice() {
+    return fetch(`${coreApiUrl}/itt`, {
+        headers: new Headers({
+            "API-KEY": apiKey,
+            "Content-Type": "application/json"
+        }),
+        mode: "cors"
+    }).then(result => {
+        return result.json().then(itt => { return parseFloat(itt.close).toFixed(3); })
+    });
+}
+
 export default {
     save: save,
     READABLE_SETTINGS: readableSettings,
@@ -116,5 +131,6 @@ export default {
     loadTransactionCurrencies: loadTransactionCurrencies,
     loadUserSettings: loadUserSettings,
     loadIndicators: loadIndicators,
-    resetCoins: resetCoins
+    resetCoins: resetCoins,
+    loadIttPrice: loadIttPrice
 }
