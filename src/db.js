@@ -97,7 +97,7 @@ function loadIndicators() {
 }
 
 function loadIttPrice() {
-    return fetch(`${coreApiUrl}/itt`, {
+    return fetch(`${coreApiUrl}/itt/`, {
         headers: new Headers({
             "API-KEY": apiKey,
             "Content-Type": "application/json",
