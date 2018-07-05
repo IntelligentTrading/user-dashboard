@@ -100,7 +100,9 @@ function loadIttPrice() {
     return fetch(`${coreApiUrl}/itt`, {
         headers: new Headers({
             "API-KEY": apiKey,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Access-Control-Request-Headers": "*",
+            "Access-Control-Request-Method": "*"
         }),
         mode: "cors"
     }).then(result => {
