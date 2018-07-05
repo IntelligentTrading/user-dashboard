@@ -15,7 +15,7 @@
           </button>
         </div>
 
-        <div style="margin-top: 20px; text-align: center;">
+        <div v-show="this.itt_usd_rate != null" style="margin-top: 20px; text-align: center;">
           <el-row  style="margin-top:10px">
           <label>
           Starter plan as low as
@@ -29,6 +29,11 @@
             1 ITT = ${{this.itt_usd_rate}} USDT
           </label>
         </el-row>
+        </div>
+        <div v-show="this.itt_usd_rate == null" style="margin-top: 20px; text-align: center;">
+          <label class="pricing-info-soon">
+        Pricing info available soon...
+          </label>
         </div>
         
     </el-main>
@@ -68,7 +73,11 @@ export default {
       return x;
     },
     requiredTokens: function() {
-      return Math.ceil(oneMonthInSeconds * usdPricePerSecond / this.itt_usd_rate);
+      if (this.itt_usd_rate)
+        return Math.ceil(
+          oneMonthInSeconds * usdPricePerSecond / this.itt_usd_rate
+        );
+      else "N/A";
     }
   }
 };
@@ -76,6 +85,15 @@ export default {
 <style>
 .pricing-info {
   font-size: 42px;
+  font-family: "helvetica neue";
+  border-radius: 5px;
+  padding: 5px;
+  font-weight: 100;
+  margin: 5px;
+}
+
+.pricing-info-soon {
+  font-size: 24px;
   font-family: "helvetica neue";
   border-radius: 5px;
   padding: 5px;

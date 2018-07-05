@@ -1,3 +1,4 @@
+import rp from 'request-promise'
 
 const serviceEndpoint = process.env.ITT_NODE_SERVICES;
 const apiKey = process.env.NODE_SVC_API_KEY;
@@ -97,17 +98,18 @@ function loadIndicators() {
 }
 
 function loadIttPrice() {
-    return fetch(`${coreApiUrl}/itt/`, {
-        headers: new Headers({
+
+    console.log('Fetching itt price...')
+    return rp(`${coreApiUrl}/itt/`, {
+        headers: {
             "API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
-        mode: "cors"
+            "Content-Type": "application/json"
+        },
+        json: true
     }).then(result => {
-        return result.json().then(itt => { return parseFloat(itt.close).toFixed(3); })
-    });
+        console.log(result)
+        return parseFloat(itt.close).toFixed(3);
+    }).catch(err => { console.log(err); return null })
 }
 
 export default {
