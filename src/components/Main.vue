@@ -78,6 +78,7 @@ export default {
 
     if (util.subscription(this.$store.state.settings).plan == "FREE") {
 
+      console.log('FREE plan is not allowed')
       this.dataLoaded = true;
       this.$emit("loaded", true);
       this.$router.push('/error')
