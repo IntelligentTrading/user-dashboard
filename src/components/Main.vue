@@ -76,7 +76,7 @@ export default {
       this.$store.commit("itt_usd_rate", fulfillments[3]);
     }
 
-    if (util.subscription(this.$store.state.settings).plan == "FREE") {
+    if (util.subscription(userSettings).plan == "FREE") {
 
       console.log('FREE plan is not allowed')
       this.dataLoaded = true;

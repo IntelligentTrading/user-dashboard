@@ -108,7 +108,7 @@ function loadIttPrice() {
         json: true
     }).then(result => {
         console.log(result)
-        return parseFloat(itt.close).toFixed(3);
+        return parseFloat(result.close).toFixed(3);
     }).catch(err => { console.log(err); return null })
 }
 

@@ -21,26 +21,6 @@ export default {
 </script>
 <style>
 
-.headerino {
-  /*height: 40px !important;*/
-  background: #36d1dc; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #5b86e5,
-    #36d1dc
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #5b86e5,
-    #36d1dc
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  
-  font-weight: 600;
-  color: whitesmoke;
-  padding: 10px;
-  width:100%
-}
 </style>
 
 
