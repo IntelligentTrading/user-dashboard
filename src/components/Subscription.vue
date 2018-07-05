@@ -1,7 +1,7 @@
 <template>
 <el-container>
   <el-header>
-            <Header title="SUBSCRIPTIONS" />
+            <Header title="Subscriptions" />
             </el-header> 
     <el-main>
       <label style="font-size:xx-large">{{subscriptionPlan.plan}}</label>

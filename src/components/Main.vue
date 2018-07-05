@@ -1,19 +1,19 @@
 <template>
     <el-container>
-        <el-header>
-            <el-row style="margin-top:10px">
-                SETTINGS
-            </el-row>
-            </el-header>
+      <el-header>
+        <Header title="Settings" navigation=false />
+      </el-header>
             <!--<div style="width:100%">
               <el-progress v-show="this.inProgress" :text-inside="true" :stroke-width="8" :percentage="this.percentage"></el-progress>
             </div>-->
         <el-main>
             <div class="settings-label">User Details</div>
-            <settings-button subtitle="Telegram Id" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
-            <settings-button actionTitle="Upgrade" subtitle="Subscription Plan" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
-            <settings-button actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
+            <settings-button class="nocursor" subtitle="Telegram Id" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
+            <settings-button actionTitle="Upgrade" subtitle="Subscription" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
+            <div class="settings-label">Notifications Settings</div>
+            <settings-button actionTitle="Edit" subtitle="Active alerts and indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
             <div class="settings-label">Signals Settings</div>
+            <settings-button actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <settings-button actionTitle="Edit" subtitle="Coin watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
             <el-checkbox-group v-model=settings.counter_currencies size="default">
                 <el-checkbox-button v-for="cc in allCounterCurrencies" v-show="cc.enabled" :label="cc.index" :key="cc.index" @change="save">{{'alt / '+cc.symbol}}</el-checkbox-button>
@@ -23,14 +23,13 @@
                     <el-radio-button label="short">High Risk</el-radio-button>
                     <el-radio-button label="medium">Medium Risk</el-radio-button>
                     <el-radio-button label="long">Low Risk</el-radio-button>
-                </el-radio-group>
-            <div class="settings-label">Notifications Settings</div>
-            <settings-button actionTitle="Edit" subtitle="Active alerts and indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
+            </el-radio-group>
         </el-main>
     </el-container>
 </template>
 <script>
 import logo from "../assets/itf.jpg";
+import Header from "./Header.vue";
 import SettingsButton from "./SettingsButton";
 import moment from "moment";
 import db from "../db";
@@ -56,6 +55,9 @@ export default {
     };
   },
   async created() {
+    if (!this.$store.state.telegram_chat_id)
+      this.$store.commit("telegramId", parseInt(this.$props.telegram_chat_id));
+
     var userSettings = this.$store.state.settings;
     this.all_transaction_currencies = this.$store.state.all_transaction_currencies;
 
@@ -69,24 +71,34 @@ export default {
       this.all_transaction_currencies = fulfillments[0];
       var user = fulfillments[1];
       userSettings = user.settings;
+
       this.$store.commit("indicators", fulfillments[2]);
       this.$store.commit("itt_usd_rate", fulfillments[3]);
     }
 
-    this.settings = {};
+    if (util.subscription(this.$store.state.settings).plan == "FREE") {
 
-    db.READABLE_SETTINGS.forEach(readableSetting => {
-      var propertyName = readableSetting.setting;
-      this.settings[propertyName] = userSettings[propertyName];
-    });
+      this.dataLoaded = true;
+      this.$emit("loaded", true);
+      this.$router.push('/error')
 
-    this.dataLoaded = true;
-    this.$store.commit("settings", this.settings);
-    this.$store.commit(
-      "all_transaction_currencies",
-      this.all_transaction_currencies
-    );
-    this.$emit("loaded", true);
+    } else {
+      this.settings = {};
+
+      db.READABLE_SETTINGS.forEach(readableSetting => {
+        var propertyName = readableSetting.setting;
+        this.settings[propertyName] = userSettings[propertyName];
+      });
+
+      this.$store.commit("settings", this.settings);
+      this.$store.commit(
+        "all_transaction_currencies",
+        this.all_transaction_currencies
+      );
+
+      this.dataLoaded = true;
+      this.$emit("loaded", true);
+    }
   },
   methods: {
     save: function() {
@@ -101,7 +113,8 @@ export default {
     }
   },
   components: {
-    SettingsButton
+    SettingsButton,
+    Header
   },
   computed: {
     subscription: function() {
@@ -135,20 +148,7 @@ export default {
 </script>
 <style>
 .el-header {
-  height: 40px !important;
-  background: #36d1dc; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #5b86e5,
-    #36d1dc
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #5b86e5,
-    #36d1dc
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  font-weight: 600;
-  color: whitesmoke;
+  padding: 0px;
 }
 
 .el-progress {

@@ -1,7 +1,7 @@
 <template>
   <el-container>
         <el-header>
-            <Header title="COINS" />
+            <Header title="Coins" />
             </el-header>
         <el-main>
           <el-row class="search-row">

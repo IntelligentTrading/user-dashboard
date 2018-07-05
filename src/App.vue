@@ -47,6 +47,10 @@ li a {
   cursor: pointer;
 }
 
+.nocursor:hover{
+  cursor:default !important
+}
+
 #wow {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
