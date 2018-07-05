@@ -1,7 +1,7 @@
 <template>
   <el-container>
         <el-header>
-            <Header title="WIZARD" />
+            <Header title="Wizard" />
             </el-header>
             
         <el-main>

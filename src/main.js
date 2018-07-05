@@ -109,6 +109,12 @@ const router = new VueRouter({
       component: Notifications,
       props: true,
       name: 'Notifications'
+    },
+    {
+      path: '/error',
+      component: ErrorPage,
+      props: true,
+      name: 'ErrorPage'
     }
   ]
 })

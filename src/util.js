@@ -11,7 +11,7 @@ export default {
                 moment().diff(settings.subscriptions.beta, "days");
             return paidDaysLeft > 0
                 ? { plan: "Starter", daysLeft: paidDaysLeft }
-                : betaDaysLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft } : { plan: "FREE", daysLeft: 'Not expiring' };
+                : betaDaysLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft } : { plan: "FREE", daysLeft: '∞' };
         }
 
         return { plan: 'Loading...', daysLeft: '0' }
