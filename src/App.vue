@@ -82,6 +82,11 @@ li a {
   left: 0px;
 }
 
+.el-header {
+  padding: 0px !important;
+  height: auto !important;
+}
+
 @keyframes flickerAnimation {
   0% {
     opacity: 1;

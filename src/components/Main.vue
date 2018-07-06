@@ -148,9 +148,6 @@ export default {
 //-------------
 </script>
 <style>
-.el-header {
-  padding: 0px;
-}
 
 .el-progress {
   line-height: 0;
