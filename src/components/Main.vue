@@ -13,7 +13,7 @@
             <div class="settings-label">Notifications Settings</div>
             <settings-button actionTitle="Edit" subtitle="Active alerts and indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
             <div class="settings-label">Signals Settings</div>
-            <settings-button actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
+            <settings-button v-show="false" actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <settings-button actionTitle="Edit" subtitle="Coin watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
             <el-checkbox-group v-model=settings.counter_currencies size="default">
                 <el-checkbox-button v-for="cc in allCounterCurrencies" v-show="cc.enabled" :label="cc.index" :key="cc.index" @change="save">{{'alt / '+cc.symbol}}</el-checkbox-button>
