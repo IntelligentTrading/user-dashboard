@@ -3,13 +3,16 @@ import moment from 'moment'
 export default {
     subscription: function (settings) {
         if (settings && settings.subscriptions) {
+
+            if (settings.is_ITT_team)
+                return { plan: "Starter (ITF Team)", daysLeft: '∞' }
+
             var paidDaysLeft =
-                -1 *
-                moment().diff(settings.subscriptions.paid, "days");
+                Math.max(-1 * moment().diff(settings.subscriptions.paid, "days"), 0);
             var betaDaysLeft =
-                -1 *
-                moment().diff(settings.subscriptions.beta, "days");
-            return paidDaysLeft > 0 || settings.is_ITT_team
+                Math.max(-1 * moment().diff(settings.subscriptions.beta, "days"), 0);
+
+            return paidDaysLeft > 0
                 ? { plan: "Starter", daysLeft: paidDaysLeft }
                 : betaDaysLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft } : { plan: "FREE", daysLeft: '∞' };
         }
