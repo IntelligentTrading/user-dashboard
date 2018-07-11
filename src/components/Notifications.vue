@@ -99,13 +99,13 @@ export default {
 }
 
 .option-label {
-  font-size: small;
+  font-size: 16px;
   font-weight: 600;
   font-family: unset;
   width: 100%;
   text-align: left;
   margin-bottom: 15px;
-  color: steelblue;
+  color: #2a4d96;
 }
 
 .disabledIndicator {

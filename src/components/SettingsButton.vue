@@ -7,7 +7,7 @@
                     <el-row><div class="option-value">{{this.$props.currentOptionValue}}</div></el-row>
                 </el-col>
                 <el-col :span="5">
-                    <div v-show="this.isNavigable" :class="[{extraClass: this.$props.extraClass},'action-title']">{{this.$props.actionTitle}}</div>
+                    <div v-show="this.isNavigable" :class="[{upgradeBtn: this.$props.extraClass},'action-title']">{{this.$props.actionTitle}}</div>
                 </el-col>
                 <el-col :span="1"><div v-show="this.isNavigable && !this.$props.hideNavArrow" style="text-align:right;">
                     
@@ -25,7 +25,7 @@
 <script>
 export default {
   name: "SettingsButton",
-  props: ["subtitle", "currentOptionValue", "icon", "to", "actionTitle","hideNavArrow","extraButtonClass"],
+  props: ["subtitle", "currentOptionValue", "icon", "to", "actionTitle","hideNavArrow","extraClass"],
   data() {
     return {
       isNavigable: this.to != undefined
@@ -43,23 +43,24 @@ export default {
   text-align: left;
   font-size: small;
   font-weight: 400;
-  color: lightslategray;
+  color: black;
 }
 
 .icons {
-  color: cornflowerblue;
+  color: #2a4d96;
   vertical-align: text-bottom;
   margin-right: 10px
 }
 
 .arrow-icon {
   vertical-align: text-bottom;
-  color: lightslategray;
+  color: black;
 }
 
 .action-title {
   margin-top: 2px;
   text-align: right;
 }
+
 </style>
 

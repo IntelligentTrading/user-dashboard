@@ -146,15 +146,6 @@ export default {
 //-------------
 </script>
 <style>
-.upgrade-btn {
-  padding: 10px;
-  border-radius: 10px;
-  background: #4ccfa6;
-  width: 60px;
-  color: whitesmoke;
-  font-weight: 900;
-}
-
 .el-progress {
   line-height: 0;
 }
@@ -167,8 +158,8 @@ export default {
   text-align: left;
   margin-bottom: 10px;
   margin-top: 10px;
-  font-size: small;
-  color: cornflowerblue;
+  font-size: 16px;
+  color: #2a4d96;
   font-weight: bold;
 }
 
@@ -178,7 +169,19 @@ export default {
 
 .subtitle {
   text-align: left;
-  color: cornflowerblue;
-  font-size: small;
+  color: #2a4d96;
+  font-size: 16px;
+}
+
+.upgradeBtn {
+  padding: 10px;
+  border-radius: 10px;
+  background: #4ccfa6;
+  width: 70px;
+  text-align: center;
+  color: whitesmoke;
+  font-weight: 900;
+  position: absolute;
+  right: 0px;
 }
 </style>
