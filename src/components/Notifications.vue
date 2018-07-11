@@ -17,6 +17,12 @@
             <el-col :span="4"><el-switch :disabled="subscriptionPlan.plan != 'Starter' && !indicator.available" v-model="indicator.enabled" @change="save"></el-switch></el-col>
         </el-row>
         <hr style="opacity:0.2;" />
+        <div class="option-label">Strategies</div>
+      <el-row :gutter="24" :class="[{disabledIndicator: subscriptionPlan.plan != 'Starter'},'indicator']" v-for="strategy in this.strategies" v-bind:key="strategy.name">
+            <el-col class="setting-label" :span="subscriptionPlan.plan != 'Starter' && !strategy.available ? 16 : 20">{{getSignalLabel(strategy)}}</el-col>
+            <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="subscriptionPlan.plan != 'Starter'" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
+            <el-col :span="4"><el-switch :disabled="subscriptionPlan.plan != 'Starter'" v-model="strategy.follow" @change="save"></el-switch></el-col>
+        </el-row>
     </el-main>
 </el-container>
 </template>
@@ -40,7 +46,8 @@ export default {
           enabled: this.$store.state.settings.is_crowd_enabled
         }
       ],
-      indicators: this.$store.state.settings.indicators
+      indicators: this.$store.state.settings.indicators,
+      strategies: this.$store.state.settings.strategies
     };
   },
   methods: {
@@ -51,6 +58,7 @@ export default {
       });
 
       settings.indicators = this.indicators;
+      settings.strategies = this.strategies;
       this.$store.dispatch("save", {
         chat_id: this.$store.state.telegram_chat_id,
         settings: settings
@@ -58,6 +66,11 @@ export default {
     },
     goToUpgrade() {
       this.$router.push("/Subscription");
+    },
+    getSignalLabel(signal){
+      var signals = this.$store.state.signals
+      var match = signals.find(s => s.name && s.name == signal.name)
+      return match ? match.label : signal.name
     }
   },
   components: {

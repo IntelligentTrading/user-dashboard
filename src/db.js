@@ -16,6 +16,7 @@ const readableSettings = [
     { setting: "ittWalletReceiverAddress", readonly: true },
     { setting: "subscriptions", readonly: true },
     { setting: "indicators", readonly: false },
+    { setting: "strategies", readonly: false },
     { setting: "ittTransactions", readonly: true }
 ];
 
@@ -84,7 +85,7 @@ function loadUserSettings(chat_id) {
     });
 }
 
-function loadIndicators() {
+function loadSignals() {
     return fetch(`${serviceEndpoint}/signals`, {
         headers: new Headers({
             "NSVC-API-KEY": apiKey,
@@ -135,7 +136,7 @@ export default {
     ],
     loadTransactionCurrencies: loadTransactionCurrencies,
     loadUserSettings: loadUserSettings,
-    loadIndicators: loadIndicators,
+    loadSignals: loadSignals,
     resetCoins: resetCoins,
     loadIttPrice: loadIttPrice
 }
