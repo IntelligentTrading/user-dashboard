@@ -43,6 +43,9 @@ const store = new Vuex.Store({
     indicators(state, indicators) {
       state.indicators = indicators
     },
+    signals(state,signals){
+      state.signals = signals
+    },
     itt_usd_rate(state,itt_usd_rate){
       state.itt_usd_rate = itt_usd_rate
     }

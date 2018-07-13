@@ -9,7 +9,7 @@
         <el-main>
             <div class="settings-label">User Details</div>
             <settings-button class="nocursor" subtitle="Telegram Id" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
-            <settings-button actionTitle="Upgrade" subtitle="Subscription" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
+            <settings-button actionTitle="Upgrade" extraClass="true" subtitle="Subscription"  hideNavArrow="true" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
             <div class="settings-label">Notifications Settings</div>
             <settings-button actionTitle="Edit" subtitle="Active alerts and indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
             <div class="settings-label">Signals Settings</div>
@@ -65,24 +65,22 @@ export default {
       var fulfillments = await Promise.all([
         db.loadTransactionCurrencies(),
         db.loadUserSettings(this.$props.telegram_chat_id),
-        db.loadIndicators(),
+        db.loadSignals(),
         db.loadIttPrice()
       ]);
       this.all_transaction_currencies = fulfillments[0];
       var user = fulfillments[1];
       userSettings = user.settings;
 
-      this.$store.commit("indicators", fulfillments[2]);
+      this.$store.commit("signals", fulfillments[2]);
       this.$store.commit("itt_usd_rate", fulfillments[3]);
     }
 
     if (util.subscription(userSettings).plan == "FREE") {
-
-      console.log('FREE plan is not allowed')
+      console.log("FREE plan is not allowed");
       this.dataLoaded = true;
       this.$emit("loaded", true);
-      this.$router.push('/error')
-
+      this.$router.push("/error");
     } else {
       this.settings = {};
 
@@ -148,7 +146,6 @@ export default {
 //-------------
 </script>
 <style>
-
 .el-progress {
   line-height: 0;
 }
@@ -161,8 +158,8 @@ export default {
   text-align: left;
   margin-bottom: 10px;
   margin-top: 10px;
-  font-size: small;
-  color: cornflowerblue;
+  font-size: 16px;
+  color: #2a4d96;
   font-weight: bold;
 }
 
@@ -172,7 +169,19 @@ export default {
 
 .subtitle {
   text-align: left;
-  color: cornflowerblue;
-  font-size: small;
+  color: #2a4d96;
+  font-size: 16px;
+}
+
+.upgradeBtn {
+  padding: 10px;
+  border-radius: 10px;
+  background: #4ccfa6;
+  width: 70px;
+  text-align: center;
+  color: whitesmoke;
+  font-weight: 900;
+  position: absolute;
+  right: 0px;
 }
 </style>

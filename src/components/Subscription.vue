@@ -4,17 +4,25 @@
             <Header title="Subscriptions" />
             </el-header> 
     <el-main>
-      <label style="font-size:xx-large">{{subscriptionPlan.plan}}</label>
-      <br/>
-      <label>{{subscriptionPlan.daysLeft}} days left.</label>
-    
+      <el-row>
+      <label class="plan-label">{{subscriptionPlan.plan}}</label>
+      </el-row>
+      <el-row>
+      <label class="exp-date">{{subscriptionPlan.daysLeft}} days left.</label>
+      </el-row>
+      <el-row>
         <qrcode class="qrcode" v-bind:text="address"/>
+        </el-row>
+        <el-row>
         <div class="container">
           <button type="button" class="addressLabel" v-clipboard:copy="address" v-clipboard:success="onCopy" v-clipboard:error="onError">
-            {{address}}
+            {{address}} <i class="far fa-copy" style="color:#4ccfa6"></i>
           </button>
         </div>
-
+        </el-row>
+        <el-row style="margin-top: 20px">
+          <label class="qr-info">Subscribe now by sending ITT tokens and your bot will be automatically upgraded</label>
+        </el-row>
         <div v-show="this.itt_usd_rate != null" style="margin-top: 20px; text-align: center;">
           <el-row  style="margin-top:10px">
           <label>
@@ -83,6 +91,12 @@ export default {
 };
 </script>
 <style>
+.qr-info{
+  color:#2a4d96;
+  font-weight: bold;
+  font-size: 16px; 
+}
+
 .pricing-info {
   font-size: 42px;
   font-family: "helvetica neue";
@@ -106,15 +120,33 @@ export default {
 }
 
 .addressLabel {
-  font-size: small;
-  background: goldenrod;
+  font-size: 12px;
+  background: transparent;
   border: transparent;
   padding: 5px;
   margin-top: 10px;
 }
 
 .qrcode {
-  display: inline-flex;
+display: inline-block;
+}
+
+.qrcode>img {
+  
   margin-top: 20px;
+  width: 200px;
+  height: 200px;
+}
+
+.plan-label {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+  color: #2a4d96;
+  font-weight: bold;
+}
+
+.exp-date {
+  font-size: 13px;
 }
 </style>

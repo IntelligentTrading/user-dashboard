@@ -16,7 +16,6 @@
             <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="subscriptionPlan.plan != 'Starter' && !indicator.available" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
             <el-col :span="4"><el-switch :disabled="subscriptionPlan.plan != 'Starter' && !indicator.available" v-model="indicator.enabled" @change="save"></el-switch></el-col>
         </el-row>
-        <hr style="opacity:0.2;" />
     </el-main>
 </el-container>
 </template>
@@ -58,6 +57,11 @@ export default {
     },
     goToUpgrade() {
       this.$router.push("/Subscription");
+    },
+    getSignalLabel(signal){
+      var signals = this.$store.state.signals
+      var match = signals.find(s => s.name && s.name == signal.name)
+      return match ? match.label : signal.name
     }
   },
   components: {
@@ -86,13 +90,13 @@ export default {
 }
 
 .option-label {
-  font-size: small;
+  font-size: 16px;
   font-weight: 600;
   font-family: unset;
   width: 100%;
   text-align: left;
   margin-bottom: 15px;
-  color: steelblue;
+  color: #2a4d96;
 }
 
 .disabledIndicator {

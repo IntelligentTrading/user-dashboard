@@ -84,7 +84,7 @@ function loadUserSettings(chat_id) {
     });
 }
 
-function loadIndicators() {
+function loadSignals() {
     return fetch(`${serviceEndpoint}/signals`, {
         headers: new Headers({
             "NSVC-API-KEY": apiKey,
@@ -135,7 +135,7 @@ export default {
     ],
     loadTransactionCurrencies: loadTransactionCurrencies,
     loadUserSettings: loadUserSettings,
-    loadIndicators: loadIndicators,
+    loadSignals: loadSignals,
     resetCoins: resetCoins,
     loadIttPrice: loadIttPrice
 }
