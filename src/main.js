@@ -43,9 +43,6 @@ const store = new Vuex.Store({
     indicators(state, indicators) {
       state.indicators = indicators
     },
-    strategies(state, strategies) {
-      state.strategies = strategies
-    },
     signals(state,signals){
       state.signals = signals
     },

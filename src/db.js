@@ -16,7 +16,6 @@ const readableSettings = [
     { setting: "ittWalletReceiverAddress", readonly: true },
     { setting: "subscriptions", readonly: true },
     { setting: "indicators", readonly: false },
-    { setting: "strategies", readonly: false },
     { setting: "ittTransactions", readonly: true }
 ];
 
