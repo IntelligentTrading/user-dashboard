@@ -103,7 +103,7 @@ function loadIttPrice() {
     console.log('Fetching itt price...')
     return rp(`${coreApiUrl}/itt/`, {
         headers: {
-            "API-KEY": apiKey,
+            "API-KEY": coreApiKey,
             "Content-Type": "application/json"
         },
         json: true
