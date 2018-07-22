@@ -11,10 +11,10 @@
             <settings-button class="nocursor" subtitle="Telegram Id" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
             <settings-button actionTitle="Upgrade" extraClass="true" subtitle="Subscription"  hideNavArrow="true" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
             <div class="settings-label">Signals</div>
-            <settings-button actionTitle="Edit" subtitle="Active alerts and indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
+            <settings-button actionTitle="Edit" subtitle="Alerts & indicators" v-bind:currentOptionValue="activeIndicators" icon="far fa-bell icons" to="/Notifications"></settings-button>
             <div class="settings-label">Tickers</div>
             <settings-button v-show="false" actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
-            <settings-button actionTitle="Edit" subtitle="Coin watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
+            <settings-button actionTitle="Edit" subtitle="Currencies watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
             <el-checkbox-group v-model=settings.counter_currencies size="default">
                 <el-checkbox-button v-for="cc in allCounterCurrencies" v-show="cc.enabled" :label="cc.index" :key="cc.index" @change="save">{{'alt / '+cc.symbol}}</el-checkbox-button>
             </el-checkbox-group>

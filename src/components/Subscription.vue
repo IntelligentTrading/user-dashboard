@@ -21,12 +21,12 @@
         </div>
         </el-row>
         <el-row style="margin-top: 20px">
-          <label class="qr-info">Subscribe now by sending ITT tokens and your bot will be automatically upgraded</label>
+          <label class="qr-info">Send ITT tokens to this wallet address, then your subscription will be updated instantly.</label>
         </el-row>
         <div v-show="this.itt_usd_rate != null" style="margin-top: 20px; text-align: center;">
           <el-row  style="margin-top:10px">
           <label>
-          Starter plan as low as
+          Starter plan rate
           </label>
           <br/>
           <label class="pricing-info">
@@ -36,6 +36,9 @@
           <label class="pricing-subtitle">
             1 ITT = ${{this.itt_usd_rate}} USDT
           </label>
+        </el-row>
+        <el-row>
+          <el-button type="success" @click="openBlank('https://intelligenttrading.org/guides/how-to-buy-itt-tokens/?utm_source=TelegramBotSettings')">How to get ITT</el-button>
         </el-row>
         </div>
         <div v-show="this.itt_usd_rate == null" style="margin-top: 20px; text-align: center;">
@@ -73,6 +76,9 @@ export default {
     },
     goBack: function() {
       this.$router.go(-1);
+    },
+    openBlank: function(link){
+      window.open(link,'_blank')
     }
   },
   computed: {
