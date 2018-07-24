@@ -4,14 +4,16 @@
             <Header title="Currencies watchlist" />
             </el-header>
         <el-main>
-          <el-row :gutter="24" v-for="cc in allCounterCurriencies" :key="cc.index" style="margin:5px;padding:5px">
-            <el-col :span="16">
+          <el-row :gutter="24" v-for="cc in allCounterCurriencies" :key="cc.index" class="counter-label">
+            <el-col :span="14">
               {{'alt / '+cc.symbol}}
             </el-col>
-            <el-col :span="8">
+            <el-col :span="4" style="color:transparent">-</el-col>
+            <el-col :span="6" style="">
             <el-switch  v-model="cc.enabled" @change="onCounterChange(cc.index,cc.enabled)"></el-switch>
             </el-col>
             </el-row>
+            <hr style="opacity:0.2;" />
           <el-row class="search-row">
             <el-input size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Ticker" />
           </el-row>
@@ -102,8 +104,29 @@ export default {
       return false;
     },
     filteredTransactionCurrencies: function() {
+      var enabledCounterCurrencies = this.allCounterCurriencies.filter(
+        acc => acc.enabled
+      );
+      if (!enabledCounterCurrencies || enabledCounterCurrencies.length <= 0)
+        return [];
+
+      console.log(enabledCounterCurrencies.map(ecc => ecc.index));
+
+      var all_transaction_currencies_for_counter = this.$store.state.all_transaction_currencies.filter(
+        tc => {
+          var counterCurrenciesEnabled = tc.counter_currencies.filter(cc => {
+            console.log(`Checking ${tc.symbol}: ${cc}`)
+            return enabledCounterCurrencies.map(ecc => ecc.index).includes(cc)
+          });
+
+          return counterCurrenciesEnabled && counterCurrenciesEnabled.length > 0
+        }
+      );
+
+      console.log(all_transaction_currencies_for_counter);
+
       var allTransactionCurrencies = _.sortBy(
-        this.$store.state.all_transaction_currencies.map(tc => {
+        all_transaction_currencies_for_counter.map(tc => {
           tc.enabled =
             this.$store.state.settings.transaction_currencies.indexOf(
               tc.symbol
@@ -151,6 +174,12 @@ export default {
 
 .el-input--medium .el-input__inner {
   height: 60px !important;
+}
+
+.counter-label {
+  text-align: left;
+  padding-left: 15px;
+  padding-bottom: 10px;
 }
 </style>
 
