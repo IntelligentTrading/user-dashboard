@@ -84,7 +84,6 @@ export default {
       this.$forceUpdate();
     },
     onCounterChange: function(index, enabled) {
-      console.log(`${index}:${enabled}`);
       if (enabled) this.$store.state.settings.counter_currencies.push(index);
       else
         this.$store.state.settings.counter_currencies = this.$store.state.settings.counter_currencies.filter(
@@ -110,20 +109,15 @@ export default {
       if (!enabledCounterCurrencies || enabledCounterCurrencies.length <= 0)
         return [];
 
-      console.log(enabledCounterCurrencies.map(ecc => ecc.index));
-
       var all_transaction_currencies_for_counter = this.$store.state.all_transaction_currencies.filter(
         tc => {
           var counterCurrenciesEnabled = tc.counter_currencies.filter(cc => {
-            console.log(`Checking ${tc.symbol}: ${cc}`)
             return enabledCounterCurrencies.map(ecc => ecc.index).includes(cc)
           });
 
           return counterCurrenciesEnabled && counterCurrenciesEnabled.length > 0
         }
       );
-
-      console.log(all_transaction_currencies_for_counter);
 
       var allTransactionCurrencies = _.sortBy(
         all_transaction_currencies_for_counter.map(tc => {
