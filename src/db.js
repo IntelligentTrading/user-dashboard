@@ -121,17 +121,20 @@ export default {
         {
             symbol: "BTC",
             index: 0,
-            enabled: true
+            enabled: false,
+            available: true
         },
         {
             symbol: "ETH",
             index: 1,
-            enabled: false
+            enabled: false,
+            available: false
         },
         {
             symbol: "USDT",
             index: 2,
-            enabled: true
+            enabled: true,
+            available: true
         }
     ],
     loadTransactionCurrencies: loadTransactionCurrencies,

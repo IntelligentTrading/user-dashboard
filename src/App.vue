@@ -77,9 +77,8 @@ li a {
   position: fixed;
   bottom: 0px;
   width: 100%;
-  margin: 0px;
+  max-width: 800px;
   padding: 10px;
-  left: 0px;
 }
 
 .el-header {

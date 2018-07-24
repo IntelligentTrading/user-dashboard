@@ -1,15 +1,11 @@
 <template>
   <el-container>
         <el-header>
-            <Header title="Signals" />
+            <Header title="Alerts & Indicators" />
         </el-header>
         <el-main style="padding:10px">
-          <div class="option-label">General</div>
-          <el-row :gutter="24" class="indicator" v-for="generalAlert in this.generalAlerts" v-bind:key="generalAlert.label">
-            <el-col class="setting-label" :span="20">{{generalAlert.label}}</el-col>
-            <el-col :span="4"><el-switch v-model="generalAlert.enabled" @change="save" ></el-switch></el-col>
-        </el-row>
-        <hr style="opacity:0.2;" />
+          
+        
         <div class="option-label">Exchanges</div>
       <el-row :gutter="24" :class="[{disabledIndicator: !subscriptionPlan.plan.includes('Starter')},'indicator']" v-for="exchange in this.exchanges" v-bind:key="exchange.label">
             <el-col class="setting-label" :span="!subscriptionPlan.plan.includes('Starter') ? 16 : 20">{{exchange.label}}</el-col>
@@ -19,11 +15,18 @@
         <hr style="opacity:0.2;" />
         <div class="option-label">Indicators</div>
       <el-row :gutter="24" :class="[{disabledIndicator: !subscriptionPlan.plan.includes('Starter') && !indicator.available},'indicator']" v-for="indicator in this.indicators" v-bind:key="indicator.name">
-            <el-col class="setting-label" :span="!subscriptionPlan.plan.includes('Starter') && !indicator.available ? 16 : 20">{{indicator.label}}</el-col>
+            <el-col class="setting-label" :span="!subscriptionPlan.plan.includes('Starter') && !indicator.available ? 16 : 20">{{indicator.label}}
+            <i class="fas fa-info-circle url-icon" style="font-size: 12px; color:#409dfb" @click='getSignalUserGuideUrl(indicator.name)'></i></el-col>
             <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="!subscriptionPlan.plan.includes('Starter') && !indicator.available" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
             <el-col :span="4"><el-switch :disabled="!subscriptionPlan.plan.includes('Starter') && !indicator.available" v-model="indicator.enabled" @change="save"></el-switch></el-col>
+            
         </el-row>
-        
+        <hr style="opacity:0.2;" />
+        <div class="option-label">Other</div>
+          <el-row :gutter="24" class="indicator" v-for="generalAlert in this.generalAlerts" v-bind:key="generalAlert.label">
+            <el-col class="setting-label" :span="20">{{generalAlert.label}}</el-col>
+            <el-col :span="4"><el-switch v-model="generalAlert.enabled" @change="save" ></el-switch></el-col>
+        </el-row>
     </el-main>
 </el-container>
 </template>
@@ -36,11 +39,11 @@ export default {
   data() {
     return {
       generalAlerts: [
-        {
+        /*{
           label: "Mute",
           name: "is_muted",
           enabled: this.$store.state.settings.is_muted
-        },
+        },*/
         {
           label: "Crowd Sentiment",
           name: "is_crowd_enabled",
@@ -73,7 +76,13 @@ export default {
       var signals = this.$store.state.signals;
       var match = signals.find(s => s.name && s.name == signal.name);
       return match ? match.label : signal.name;
-    }
+    },
+    getSignalUserGuideUrl(signalName) {
+      var signals = this.$store.state.signals;
+      var match = signals.find(s => s.label && s.label == signalName);
+      window.open(match.guide_url,'_blank')
+      //return match ? match.guide_url : '';
+    },
   },
   components: {
     Header
@@ -112,5 +121,9 @@ export default {
 
 .disabledIndicator {
   color: lightgrey;
+}
+
+.url-icon:hover{
+  cursor: pointer;
 }
 </style>
