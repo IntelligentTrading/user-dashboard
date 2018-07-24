@@ -15,9 +15,6 @@
             <div class="settings-label">Tickers</div>
             <settings-button v-show="false" actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <settings-button actionTitle="Edit" subtitle="Currencies watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
-            <el-checkbox-group v-model=settings.counter_currencies size="default">
-                <el-checkbox-button v-for="cc in allCounterCurrencies" v-show="cc.enabled" :label="cc.index" :key="cc.index" @change="save">{{'alt / '+cc.symbol}}</el-checkbox-button>
-            </el-checkbox-group>
             <div class="settings-label">Trading Frequency</div>
             <el-radio-group v-model="settings.horizon" size="default" @change="save">
                     <el-radio-button label="short">High Risk</el-radio-button>
