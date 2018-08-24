@@ -14,11 +14,12 @@
         </el-row>
         <hr style="opacity:0.2;" />
         <div class="option-label">Indicators</div>
-      <el-row :gutter="24" :class="[{disabledIndicator: !subscriptionPlan.plan.includes('Starter') && !indicator.available},'indicator']" v-for="indicator in this.indicators" v-bind:key="indicator.name">
-            <el-col class="setting-label" :span="!subscriptionPlan.plan.includes('Starter') && !indicator.available ? 16 : 20">{{indicator.label}}
+      <el-row :gutter="24" :class="[{disabledIndicator: !isIndicatorSuitable(indicator)},'indicator']" v-for="indicator in this.indicators" v-bind:key="indicator.name">
+            <el-col class="setting-label" :span="!isIndicatorSuitable(indicator) ? 16 : 20">{{indicator.label}}
             <i class="fas fa-info-circle url-icon" style="font-size: 12px; color:#409dfb" @click='getSignalUserGuideUrl(indicator.name)'></i></el-col>
-            <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="!subscriptionPlan.plan.includes('Starter') && !indicator.available" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
-            <el-col :span="4"><el-switch :disabled="!subscriptionPlan.plan.includes('Starter') && !indicator.available" v-model="indicator.enabled" @change="save"></el-switch></el-col>
+            <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="!isIndicatorSuitable(indicator)" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
+            <el-col :span="4"><el-switch v-show="isIndicatorSuitable(indicator)"  v-model="indicator.enabled" @change="save"></el-switch></el-col>
+            <el-col :span="4"><el-switch v-show="!isIndicatorSuitable(indicator)" :disabled="true" v-model="disabledSwitch"></el-switch></el-col>
             
         </el-row>
         <hr style="opacity:0.2;" />
@@ -51,7 +52,8 @@ export default {
         }
       ],
       indicators: this.$store.state.settings.indicators,
-      exchanges: this.$store.state.settings.exchanges
+      exchanges: this.$store.state.settings.exchanges,
+      disabledSwitch: false
     };
   },
   methods: {
@@ -83,6 +85,9 @@ export default {
       window.open(match.guide_url,'_blank')
       //return match ? match.guide_url : '';
     },
+    isIndicatorSuitable(indicator){
+      return this.subscriptionPlan.plan.includes('Starter') || indicator.available
+    }
   },
   components: {
     Header
