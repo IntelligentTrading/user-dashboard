@@ -7,10 +7,12 @@
           
         
         <div class="option-label">Exchanges</div>
-      <el-row :gutter="24" :class="[{disabledIndicator: !subscriptionPlan.plan.includes('Starter')},'indicator']" v-for="exchange in this.exchanges" v-bind:key="exchange.label">
-            <el-col class="setting-label" :span="!subscriptionPlan.plan.includes('Starter') ? 16 : 20">{{exchange.label}}</el-col>
-            <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="!subscriptionPlan.plan.includes('Starter')" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
-            <el-col :span="4"><el-switch :disabled="!subscriptionPlan.plan.includes('Starter')" v-model="exchange.enabled" @change="save"></el-switch></el-col>
+      <el-row :gutter="24" :class="[{disabledIndicator: !isExchangeSuitable()},'indicator']" v-for="exchange in this.exchanges" v-bind:key="exchange.label">
+            <el-col class="setting-label" :span="!isExchangeSuitable() ? 16 : 20">{{exchange.label}}</el-col>
+            <el-col :span="4"><el-button type="text" class="proTag" size=mini v-show="!isExchangeSuitable()" v-on:click="goToUpgrade">Upgrade</el-button></el-col>
+            <el-col :span="4"><el-switch v-show="isExchangeSuitable()" v-model="exchange.enabled" @change="save"></el-switch></el-col>
+            <el-col :span="4"><el-switch v-show="!isExchangeSuitable() && exchange.label != 'Poloniex'" :disabled="true" v-model="disabledSwitch"></el-switch></el-col>
+            <el-col :span="4"><el-switch v-show="!isExchangeSuitable() && exchange.label == 'Poloniex'" :disabled="true" v-model="enabledSwitch"></el-switch></el-col>
         </el-row>
         <hr style="opacity:0.2;" />
         <div class="option-label">Indicators</div>
@@ -53,7 +55,8 @@ export default {
       ],
       indicators: this.$store.state.settings.indicators,
       exchanges: this.$store.state.settings.exchanges,
-      disabledSwitch: false
+      disabledSwitch: false,
+      enabledSwitch: true
     };
   },
   methods: {
@@ -87,6 +90,9 @@ export default {
     },
     isIndicatorSuitable(indicator){
       return this.subscriptionPlan.plan.includes('Starter') || indicator.available
+    },
+    isExchangeSuitable(exchange){
+      return this.subscriptionPlan.plan.includes('Starter')
     }
   },
   components: {
