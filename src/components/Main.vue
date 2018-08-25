@@ -15,11 +15,11 @@
             <div class="settings-label">Tickers</div>
             <settings-button v-show="false" actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <settings-button actionTitle="Edit" subtitle="Currencies watchlist" v-bind:currentOptionValue="this.selectedTransactionCurrencies.length+' coins followed'" icon="fas fa-eye icons" to="/Coins"></settings-button>
-            <div class="settings-label">Trading Frequency</div>
+            <div class="settings-label">Signal Validity</div>
             <el-radio-group v-model="settings.horizon" size="default" @change="save">
-                    <el-radio-button label="short">High Risk</el-radio-button>
-                    <el-radio-button label="medium">Medium Risk</el-radio-button>
-                    <el-radio-button label="long">Low Risk</el-radio-button>
+                    <el-radio-button label="short">1 hour</el-radio-button>
+                    <el-radio-button label="medium">4 hours</el-radio-button>
+                    <el-radio-button label="long">24 hours</el-radio-button>
             </el-radio-group>
         </el-main>
     </el-container>
