@@ -17,7 +17,8 @@ const readableSettings = [
     { setting: "subscriptions", readonly: true },
     { setting: "indicators", readonly: false },
     { setting: "exchanges", readonly: false },
-    { setting: "ittTransactions", readonly: true }
+    { setting: "ittTransactions", readonly: true },
+    { setting: "staking", readonly: true }
 ];
 
 

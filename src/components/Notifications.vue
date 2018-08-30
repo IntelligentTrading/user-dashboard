@@ -85,14 +85,23 @@ export default {
     getSignalUserGuideUrl(signalName) {
       var signals = this.$store.state.signals;
       var match = signals.find(s => s.label && s.label == signalName);
-      window.open(match.guide_url,'_blank')
+      window.open(match.guide_url, "_blank");
       //return match ? match.guide_url : '';
     },
-    isIndicatorSuitable(indicator){
-      return this.subscriptionPlan.plan.includes('Starter') || indicator.available
+    isIndicatorSuitable(indicator) {
+      return (
+        this.subscriptionPlan.plan.includes("Starter") ||
+        this.subscriptionPlan.plan.includes("Advanced") ||
+        this.subscriptionPlan.plan.includes("Pro") ||
+        indicator.available
+      );
     },
-    isExchangeSuitable(exchange){
-      return this.subscriptionPlan.plan.includes('Starter')
+    isExchangeSuitable(exchange) {
+      return (
+        this.subscriptionPlan.plan.includes("Starter") ||
+        this.subscriptionPlan.plan.includes("Advanced") ||
+        this.subscriptionPlan.plan.includes("Pro")
+      );
     }
   },
   components: {
@@ -100,8 +109,7 @@ export default {
   },
   computed: {
     subscriptionPlan: function() {
-      var x = util.subscription(this.$store.state.settings);
-      return x;
+      return util.subscription(this.$store.state.settings);
     }
   }
 };
@@ -134,7 +142,7 @@ export default {
   color: lightgrey;
 }
 
-.url-icon:hover{
+.url-icon:hover {
   cursor: pointer;
 }
 </style>
