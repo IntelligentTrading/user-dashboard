@@ -81,21 +81,22 @@ export default {
         settings: this.$store.state.settings
       });
 
-      this.$forceUpdate();
+      //this.$forceUpdate();
     },
     onCounterChange: function(index, enabled) {
       if (enabled) this.$store.state.settings.counter_currencies.push(index);
-      else
+      else {
         this.$store.state.settings.counter_currencies = this.$store.state.settings.counter_currencies.filter(
           t => t != index
         );
+      }
 
       this.$store.dispatch("save", {
         chat_id: this.$store.state.telegram_chat_id,
         settings: this.$store.state.settings
       });
 
-      this.$forceUpdate();
+      //this.$forceUpdate();
     }
   },
   computed: {
@@ -112,10 +113,12 @@ export default {
       var all_transaction_currencies_for_counter = this.$store.state.all_transaction_currencies.filter(
         tc => {
           var counterCurrenciesEnabled = tc.counter_currencies.filter(cc => {
-            return enabledCounterCurrencies.map(ecc => ecc.index).includes(cc)
+            return enabledCounterCurrencies.map(ecc => ecc.index).includes(cc);
           });
 
-          return counterCurrenciesEnabled && counterCurrenciesEnabled.length > 0
+          return (
+            counterCurrenciesEnabled && counterCurrenciesEnabled.length > 0
+          );
         }
       );
 
