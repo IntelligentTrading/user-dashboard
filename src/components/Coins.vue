@@ -135,13 +135,15 @@ export default {
         }
       );
 
-      return this.search
+      var searchResult = this.search
         ? allTransactionCurrencies.filter(
             t =>
               t.name.toLowerCase().startsWith(this.search.toLowerCase()) ||
               t.symbol.toLowerCase().startsWith(this.search.toLowerCase())
           )
         : allTransactionCurrencies;
+
+      return searchResult.slice(0, 10);
     },
     allCounterCurriencies: function() {
       return db.COUNTER_CURRENCIES.filter(cc => cc.available).map(cc => {
