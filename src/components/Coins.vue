@@ -15,7 +15,7 @@
             </el-row>
             <hr style="opacity:0.2;" />
           <el-row class="search-row">
-            <el-input size=medium v-model="search" prefix-icon="el-icon-search" placeholder="Search Ticker" />
+            <el-input size=medium v-model.lazy="search" prefix-icon="el-icon-search" placeholder="Search Ticker" />
           </el-row>
           <el-row>
             <div class="coin-table">
@@ -143,7 +143,7 @@ export default {
           )
         : allTransactionCurrencies;
 
-      return searchResult.slice(0, 10);
+      return searchResult //.slice(0, 10);
     },
     allCounterCurriencies: function() {
       return db.COUNTER_CURRENCIES.filter(cc => cc.available).map(cc => {
