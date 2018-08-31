@@ -19,7 +19,7 @@
           </el-row>
           <el-row>
             <div class="coin-table">
-              <el-row :gutter="24" style="display:inline" v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
+              <el-row :gutter="24" v-show=tc.show v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
                 <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="14" v-text="tc.name" style="text-align:left"></el-col>
                 <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="4" v-text="tc.symbol" style="font-size:8px"></el-col>
                 <el-col class="switch-col" :span="6"><el-switch v-model="tc.enabled" @change="onChange(tc.symbol,tc.enabled)"/></el-col>
@@ -135,15 +135,22 @@ export default {
         }
       );
 
-      var searchResult = this.search
+      /*var searchResult = this.search
         ? allTransactionCurrencies.filter(
             t =>
               t.name.toLowerCase().startsWith(this.search.toLowerCase()) ||
               t.symbol.toLowerCase().startsWith(this.search.toLowerCase())
           )
-        : allTransactionCurrencies;
+        : allTransactionCurrencies;*/
 
-      return searchResult //.slice(0, 10);
+      allTransactionCurrencies.forEach(t => {
+        t.show =
+          this.search == "" ||
+          t.name.toLowerCase().startsWith(this.search.toLowerCase()) ||
+          t.symbol.toLowerCase().startsWith(this.search.toLowerCase());
+      });
+
+      return allTransactionCurrencies;
     },
     allCounterCurriencies: function() {
       return db.COUNTER_CURRENCIES.filter(cc => cc.available).map(cc => {
