@@ -19,9 +19,9 @@
           </el-row>
           <el-row>
             <div class="coin-table">
-              <el-row :gutter="24" v-show=tc.show v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
+              <el-row class="cryptorow" :gutter="24" v-show=tc.show v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
                 <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="14" v-text="tc.name" style="text-align:left"></el-col>
-                <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="4" v-text="tc.symbol" style="font-size:8px"></el-col>
+                <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="4" v-text="tc.symbol" style="font-size:8px; padding-top:6px"></el-col>
                 <el-col class="switch-col" :span="6"><el-switch v-model="tc.enabled" @change="onChange(tc.symbol,tc.enabled)"/></el-col>
               </el-row>
             </div>
@@ -186,6 +186,10 @@ export default {
   text-align: left;
   padding-left: 15px;
   padding-bottom: 10px;
+}
+
+.cryptorow{
+  padding: 8px
 }
 </style>
 
