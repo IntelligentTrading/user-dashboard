@@ -24,8 +24,8 @@
           <el-row>
             <div class="coin-table">
               <el-row class="cryptorow" :gutter="24" v-show=tc.canSee v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
-                <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="14" v-text="tc.name" style="text-align:left"></el-col>
-                <el-col v-bind:class="{isNotSelected:!tc.enabled }" :span="4" v-text="tc.symbol" style="font-size:8px; padding-top:6px"></el-col>
+                <el-col v-bind:class="{isNotAvailable:!tc.canEdit }" :span="14" v-text="tc.name" style="text-align:left"></el-col>
+                <el-col v-bind:class="{isNotAvailable:!tc.canEdit }" :span="4" v-text="tc.symbol" style="font-size:8px; padding-top:6px"></el-col>
                 <el-col class="switch-col" :span="6"><el-switch v-model="tc.value" @change="onChange(tc.symbol,tc.value)" :disabled="!tc.canEdit"/></el-col>
               </el-row>
             </div>
@@ -53,7 +53,7 @@ function isCounterAvailableFor(settings, counter, subscriptionTemplates) {
   highestSubscriptionLevel =
     highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
   var tooLowToEdit =
-    highestSubscriptionLevel == "free" || highestSubscriptionLevel == "beta";
+    highestSubscriptionLevel == "free"
 
   var subscriptionTemplate = subscriptionTemplates.filter(
     st => st.label == highestSubscriptionLevel
@@ -81,7 +81,7 @@ function isCoinAvailableFor(
   highestSubscriptionLevel =
     highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
   var tooLowToEdit =
-    highestSubscriptionLevel == "free" || highestSubscriptionLevel == "beta";
+    highestSubscriptionLevel == "free" || (highestSubscriptionLevel == "beta" && !ticker.sources.includes('poloniex'));
 
   var subscriptionTemplate = subscriptionTemplates.filter(
     st => st.label == highestSubscriptionLevel
@@ -195,12 +195,7 @@ export default {
 
       var allTransactionCurrencies = _.sortBy(
         this.dbTransactionCurrencies.map(tc => {
-          return isCoinAvailableFor(
-            this.$store.state.settings,
-            tc,
-            this.subscriptionTemplates,
-            enabledCounterCurrencies
-          );
+          return isCoinAvailableFor(this.$store.state.settings,tc,this.subscriptionTemplates,enabledCounterCurrencies);
         }),
         t => {
           return parseInt(t.rank);
@@ -219,11 +214,7 @@ export default {
     },
     allCounterCurriencies: function() {
       return db.COUNTER_CURRENCIES.filter(cc => cc.available).map(cc => {
-        return isCounterAvailableFor(
-          this.$store.state.settings,
-          cc,
-          this.subscriptionTemplates
-        );
+        return isCounterAvailableFor(this.$store.state.settings,cc,this.subscriptionTemplates);
       });
     }
   },
@@ -264,6 +255,10 @@ export default {
 
 .cryptorow {
   padding: 8px;
+}
+
+.isNotAvailable {
+  opacity: 0.5;
 }
 </style>
 
