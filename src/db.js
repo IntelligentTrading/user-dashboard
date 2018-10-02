@@ -24,6 +24,7 @@ const readableSettings = [
 
 function save(chat_id, settings) {
 
+    console.log(settings)
     readableSettings.forEach(readableSetting => {
         if (readableSetting.readonly)
             delete settings[readableSetting.setting]
@@ -74,6 +75,20 @@ function loadTransactionCurrencies() {
 
 function loadUserSettings(chat_id) {
     return fetch(`${serviceEndpoint}/users/${chat_id}`, {
+        headers: new Headers({
+            "NSVC-API-KEY": apiKey,
+            "Content-Type": "application/json",
+            "Access-Control-Request-Headers": "*",
+            "Access-Control-Request-Method": "*"
+        }),
+        mode: "cors"
+    }).then(result => {
+        return result.json();
+    });
+}
+
+function loadSubscriptionTemplates() {
+    return fetch(`${serviceEndpoint}/subscription`, {
         headers: new Headers({
             "NSVC-API-KEY": apiKey,
             "Content-Type": "application/json",
@@ -142,5 +157,6 @@ export default {
     loadUserSettings: loadUserSettings,
     loadSignals: loadSignals,
     resetCoins: resetCoins,
-    loadIttPrice: loadIttPrice
+    loadIttPrice: loadIttPrice,
+    loadSubscriptionTemplates: loadSubscriptionTemplates
 }
