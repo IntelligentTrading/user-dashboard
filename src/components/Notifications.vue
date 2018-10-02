@@ -4,22 +4,20 @@
             <Header title="Alerts & Indicators" />
         </el-header>
         <el-main style="padding:10px">
-          <upgrade-settings-button extraClass=true actionTitle="Upgrade" v-bind:subtitle=subscription to="/Subscription" icon="fas fa-tag icons"></upgrade-settings-button>
+          <upgrade-settings-button v-show=this.showUpgrade extraClass=true actionTitle="Upgrade" v-bind:subtitle=subscription to="/Subscription" icon="fas fa-tag icons"></upgrade-settings-button>
           
         
         <div class="option-label">Exchanges</div>
-      <el-row style="margin:2px" v-for="exchange in this.exchanges" v-bind:key="exchange.label">
+      <el-row style="margin:2px" v-for="exchange in exchanges" v-bind:key="exchange.label">
             <el-col class="setting-label" :span="20">{{exchange.label}}</el-col>
-            <el-col :span="4" style="text-align:right"><el-switch v-show="exchange.canSee" :disabled='!exchange.canEdit' v-model="exchange.value" @change="save"></el-switch></el-col>
+            <el-col :span="4" style="text-align:right"><el-switch v-show="exchange.canSee" :disabled='!exchange.canEdit' v-model="exchange.value" @change="save(exchange,'e')"></el-switch></el-col>
       </el-row>
         <hr style="opacity:0.2;" />
         <div class="option-label">Indicators</div>
-        <el-row :class="[{disabledIndicator: !isIndicatorSuitable(indicator)},'indicator']" v-for="indicator in this.indicators" v-bind:key="indicator.name">
-            <el-col class="setting-label" :span="22">{{getSignalLabel(indicator)}}
+        <el-row style="margin:2px" v-for="indicator in indicators" v-bind:key="indicator.name">
+            <el-col class="setting-label" :span="20">{{getSignalLabel(indicator)}}
             <i class="fas fa-info-circle url-icon" style="font-size: 12px; color:#409dfb" @click='getSignalUserGuideUrl(indicator.name)'></i></el-col>
-            <el-col :span="2"><el-switch v-show="isIndicatorSuitable(indicator)"  v-model="indicator.enabled" @change="save"></el-switch></el-col>
-            <!--<el-col :span="2"><el-switch v-show="!isIndicatorSuitable(indicator)" :disabled="true" v-model="disabledSwitch"></el-switch></el-col>-->
-            
+            <el-col :span="4" style="text-align:right"><el-switch v-show="indicator.canSee" :disabled='!indicator.canEdit'  v-model="indicator.value" @change="save(indicator,'i')"></el-switch></el-col>
         </el-row>
     </el-main>
 </el-container>
@@ -52,32 +50,53 @@ function buildExchangeAvailability(settings, exchange, subscriptionTemplates) {
   return exchange;
 }
 
+function buildIndicatorAvailability(settings, indicator, signalsTemplates) {
+  var highestSubscriptionLevel = util.getHighestSubscriptionLevel(settings);
+  highestSubscriptionLevel =
+    highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
+  var tooLowToEdit =
+    highestSubscriptionLevel == "free" || highestSubscriptionLevel == "beta";
+
+  var signal = signalsTemplates.filter(s => s.label == indicator.name)[0];
+  var availableForPlan =
+    signal.deliverTo.indexOf(highestSubscriptionLevel.toLowerCase()) >= 0;
+
+  indicator.canSee = true;
+  indicator.canEdit = !tooLowToEdit;
+  indicator.value = tooLowToEdit ? availableForPlan : indicator.enabled;
+
+  return indicator;
+}
+
 export default {
   name: "Notifications",
   data() {
     return {
-      generalAlerts: [],
-      indicators: this.$store.state.settings.indicators,
-      exchanges: this.$store.state.settings.exchanges,
+      settings: this.$store.state.settings,
       disabledSwitch: false,
       enabledSwitch: true,
       subscriptionTemplates: this.$store.state.subscriptionTemplates,
-      subscription: "Upgrade to unlock custom selection."
+      subscription: "Upgrade to unlock custom selection.",
+      showUpgrade:
+        ["free", "beta"].indexOf(
+          util.getHighestSubscriptionLevel(this.$store.state.settings)
+        ) > -1
     };
   },
   methods: {
-    save: function() {
-      var settings = {};
-      this.generalAlerts.forEach(alert => {
-        settings[alert.name] = alert.enabled;
-      });
+    save: function(setting, type) {
+      if (type == "i")
+        this.settings.indicators.find(
+          ind => ind.name == setting.name
+        ).enabled = !setting.enabled;
+      if (type == "e")
+        this.settings.exchanges.find(
+          exc => exc.label == setting.label
+        ).enabled = !setting.enabled;
 
-      settings.indicators = this.indicators;
-
-      settings.exchanges = this.exchanges;
       this.$store.dispatch("save", {
         chat_id: this.$store.state.telegram_chat_id,
-        settings: settings
+        settings: this.settings
       });
     },
     goToUpgrade() {
@@ -91,33 +110,11 @@ export default {
       var match = signals.find(s => s.label && s.label == signalName);
       window.open(match.guide_url, "_blank");
       //return match ? match.guide_url : '';
-    },
-    isIndicatorSuitable(indicator) {
-      var signal = this.$store.state.signals.filter(
-        s => s.label == indicator.name
-      )[0];
-      var delivers =
-        this.subscriptionPlan == "ITT" ||
-        signal.deliverTo.indexOf(this.subscriptionPlan.toLowerCase()) >= 0;
-
-      return delivers;
-    },
-    isExchangeSuitable(exchange) {
-      return (
-        this.subscriptionPlan == "ITT" ||
-        this.subscriptionTemplate.exchanges.length == 0 ||
-        this.subscriptionTemplate.exchanges.indexOf(exchange) >= 0
-      );
     }
   },
   components: {
     Header,
     UpgradeSettingsButton
-  },
-  created: function() {
-    this.exchanges.map(ex =>
-      buildExchangeAvailability(this.$store.state.settings, ex, this.subscriptionTemplates)
-    );
   },
   computed: {
     subscriptionPlan: function() {
@@ -129,6 +126,24 @@ export default {
       return this.$store.state.subscriptionTemplates.filter(
         st => st.label == planFilter.toLowerCase()
       )[0];
+    },
+    exchanges: function() {
+      return this.$store.state.settings.exchanges.map(ex =>
+        buildExchangeAvailability(
+          this.$store.state.settings,
+          ex,
+          this.subscriptionTemplates
+        )
+      );
+    },
+    indicators: function() {
+      return this.$store.state.settings.indicators.map(ind =>
+        buildIndicatorAvailability(
+          this.$store.state.settings,
+          ind,
+          this.$store.state.signals
+        )
+      );
     }
   }
 };

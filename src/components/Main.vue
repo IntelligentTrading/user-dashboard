@@ -68,6 +68,7 @@ export default {
       isCrowdEnabled: false,
       subscriptionTitle: "View",
       showFreeSettings: false,
+      subscriptionTemplates: this.$store.state.subscriptionTemplates,
       userHorizon: "short"
     };
   },
@@ -109,12 +110,12 @@ export default {
     );
 
     this.isCrowdEnabled = this.settings.is_crowd_enabled;
-    
+
     this.showFreeSettings =
       util.getHighestSubscriptionLevel(this.settings) == "free";
     this.subscriptionTitle = this.showFreeSettings ? "Upgrade" : "View";
 
-    this.userHorizon = this.showFreeSettings ? "short" : this.settings.horizon
+    this.userHorizon = this.showFreeSettings ? "short" : this.settings.horizon;
 
     this.dataLoaded = true;
     this.$emit("loaded", true);
@@ -122,7 +123,7 @@ export default {
   methods: {
     save: function() {
       this.inProgress = true;
-      this.settings.horizon = this.userHorizon
+      this.settings.horizon = this.userHorizon;
       this.$store.dispatch("save", {
         chat_id: this.$props.telegram_chat_id,
         settings: this.settings
@@ -177,8 +178,22 @@ export default {
 
       return "Loading...";
     },
-    watchlistText:function(){
-      return this.showFreeSettings ? "Base coins only" :this.selectedTransactionCurrencies.length+' coins followed'
+    watchlistText: function() {
+      if (this.$store.state.settings) {
+        var followed = this.showFreeSettings
+          ? { coins: 5, exchanges: 1 }
+          : {
+              coins: this.selectedTransactionCurrencies.length,
+              exchanges: this.$store.state.settings.exchanges.filter(
+                ex => ex.enabled
+              ).length
+            };
+
+        return `Following ${followed.coins} tickers on ${followed.exchanges} ${
+          followed.exchanges > 1 ? "exchanges" : "exchange"
+        }`;
+      }
+      return "Loading...";
     }
   }
 };

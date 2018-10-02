@@ -23,8 +23,6 @@ const readableSettings = [
 
 
 function save(chat_id, settings) {
-
-    console.log(settings)
     readableSettings.forEach(readableSetting => {
         if (readableSetting.readonly)
             delete settings[readableSetting.setting]

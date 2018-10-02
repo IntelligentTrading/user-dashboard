@@ -164,7 +164,7 @@ export default {
         settings: this.settings
       });
 
-      this.$forceUpdate();
+      //this.$forceUpdate();
     },
     onCounterChange: function(index, enabled) {
       if (enabled) this.settings.counter_currencies.push(index);
@@ -179,7 +179,7 @@ export default {
         settings: this.settings
       });
 
-      this.$forceUpdate();
+      //this.$forceUpdate();
     }
   },
   computed: {
