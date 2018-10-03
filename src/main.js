@@ -43,6 +43,9 @@ const store = new Vuex.Store({
     indicators(state, indicators) {
       state.indicators = indicators
     },
+    subscriptionTemplates(state, templates) {
+      state.subscriptionTemplates = templates
+    },
     exchanges(state, exchanges) {
       state.exchanges = exchanges
     },
@@ -55,6 +58,7 @@ const store = new Vuex.Store({
   },
   actions: {
     save(context, payload) {
+
       return db.save(payload.chat_id, payload.settings).then((response) => {
         console.log('Settings saved')
         return response.json().then(updatedUser => {

@@ -10,12 +10,11 @@
                     <div v-show="this.isNavigable" :class="[{upgradeBtn: this.$props.extraClass},'action-title']">{{this.$props.actionTitle}}</div>
                 </el-col>
                 <el-col :span="1"><div v-show="this.isNavigable && !this.$props.hideNavArrow" style="text-align:right;">
-                    
                     <i class="fas fa-chevron-right arrow-icon"></i>
                     </div>
                 </el-col>
             </el-row>
-            <el-row>
+            <el-row> 
                 <el-col :span="2" style="color:transparent">.</el-col>
                 <el-col :span="22"><hr class="settings-separator"/></el-col>
             </el-row>
@@ -25,16 +24,24 @@
 <script>
 export default {
   name: "SettingsButton",
-  props: ["subtitle", "currentOptionValue", "icon", "to", "actionTitle","hideNavArrow","extraClass"],
+  props: [
+    "subtitle",
+    "currentOptionValue",
+    "icon",
+    "to",
+    "actionTitle",
+    "hideNavArrow",
+    "extraClass"
+  ],
   data() {
     return {
-      isNavigable: this.to != undefined
+      isNavigable: this.to != undefined,
     };
   },
   methods: {
     GoTo: function() {
       if (this.$props.to) this.$router.push(this.$props.to);
-    }
+    },
   }
 };
 </script>
@@ -48,8 +55,8 @@ export default {
 
 .icons {
   color: #2a4d96;
-  vertical-align: text-bottom;
-  margin-right: 10px
+  vertical-align: baseline;
+  margin-right: 10px;
 }
 
 .arrow-icon {
@@ -61,6 +68,5 @@ export default {
   margin-top: 2px;
   text-align: right;
 }
-
 </style>
 
