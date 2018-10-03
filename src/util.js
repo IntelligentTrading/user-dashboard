@@ -26,7 +26,6 @@ export default {
         }
     },
     getHighestSubscriptionLevel: function (settings) {
-
         var levels = {}
         levels.is_ITT_team = settings.is_ITT_team
         levels.isAdvanced = settings.staking && settings.staking.centomila

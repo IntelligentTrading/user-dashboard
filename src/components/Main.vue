@@ -9,7 +9,7 @@
         <el-main>
             <div class="settings-label">Intelligent Trading Account</div>
             <settings-button class="nocursor" subtitle="Telegram ID" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
-            <settings-button :actionTitle=subscriptionTitle  :extraClass=showFreeSettings :hideNavArrow=showFreeSettings subtitle="Subscription" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
+            <settings-button :actionTitle=subscriptionTitle  :extraClass='this.showFreeSettings' :hideNavArrow='this.showFreeSettings' subtitle="Subscription" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
             <div class="settings-label">Signals</div>
             <settings-button actionTitle="Edit" subtitle="Alerts & Indicators" v-bind:currentOptionValue="activeIndicators" icon="fas fa-bell icons" to="/Notifications"></settings-button>
             <div class="switch-settings-button">
@@ -32,7 +32,7 @@
             <settings-button v-show="false" actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <settings-button actionTitle="Edit" subtitle="Currencies Watchlist" v-bind:currentOptionValue="watchlistText" icon="fas fa-eye icons" to="/Coins"></settings-button>
             <div class="settings-label">Alert Validity</div>
-            <el-radio-group v-model="userHorizon" size="default" @change="save" :disabled=this.showFreeSettings>
+            <el-radio-group v-model="userHorizon" size="default" :disabled=this.showFreeSettings>
                     <el-radio-button label="short">1 hour</el-radio-button >
                     <el-radio-button label="medium">4 hours</el-radio-button>
                     <el-radio-button label="long">24 hours</el-radio-button>
@@ -41,6 +41,7 @@
     </el-container>
 </template>
 <script>
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import logo from "../assets/itf.jpg";
 import Header from "./Header.vue";
 import SettingsButton from "./SettingsButton";
@@ -60,85 +61,24 @@ export default {
       showSuccess: false,
       showError: false,
       dataLoaded: false,
-      all_transaction_currencies: [],
-      settings: { transaction_currencies: [] },
       allCounterCurrencies: db.COUNTER_CURRENCIES,
       inProgress: false,
-      percentage: 0,
-      isCrowdEnabled: false,
-      subscriptionTitle: "View",
-      showFreeSettings: false,
-      subscriptionTemplates: this.$store.state.subscriptionTemplates,
-      userHorizon: "short"
+      percentage: 0
     };
   },
-  async created() {
-    if (!this.$store.state.telegram_chat_id)
-      this.$store.commit("telegramId", parseInt(this.$props.telegram_chat_id));
-
-    var userSettings = this.$store.state.settings;
-    this.all_transaction_currencies = this.$store.state.all_transaction_currencies;
-
-    if (!userSettings) {
-      var fulfillments = await Promise.all([
-        db.loadTransactionCurrencies(),
-        db.loadUserSettings(this.$props.telegram_chat_id),
-        db.loadSignals(),
-        db.loadIttPrice(),
-        db.loadSubscriptionTemplates()
-      ]);
-      this.all_transaction_currencies = fulfillments[0];
-      var user = fulfillments[1];
-      userSettings = user.settings;
-
-      this.$store.commit("signals", fulfillments[2]);
-      this.$store.commit("itt_usd_rate", fulfillments[3]);
-      this.$store.commit("subscriptionTemplates", fulfillments[4]);
-    }
-
-    this.settings = {};
-
-    db.READABLE_SETTINGS.forEach(readableSetting => {
-      var propertyName = readableSetting.setting;
-      this.settings[propertyName] = userSettings[propertyName];
-    });
-
-    this.$store.commit("settings", this.settings);
-    this.$store.commit(
-      "all_transaction_currencies",
-      this.all_transaction_currencies
-    );
-
-    this.isCrowdEnabled = this.settings.is_crowd_enabled;
-
-    this.showFreeSettings =
-      util.getHighestSubscriptionLevel(this.settings) == "free";
-    this.subscriptionTitle = this.showFreeSettings ? "Upgrade" : "View";
-
-    this.userHorizon = this.showFreeSettings ? "short" : this.settings.horizon;
-
+  created() {
     this.dataLoaded = true;
     this.$emit("loaded", true);
   },
   methods: {
-    save: function() {
-      this.inProgress = true;
-      this.settings.horizon = this.userHorizon;
-      this.$store.dispatch("save", {
-        chat_id: this.$props.telegram_chat_id,
-        settings: this.settings
-      });
-      this.$forceUpdate();
-      this.inProgress = 100;
-      this.inProgress = false;
-    },
+    ...mapMutations(["telegramChatId"]),
+    ...mapActions(["saveSetting"]),
     saveCrowd: function() {
       this.settings.is_crowd_enabled = !this.isCrowdEnabled;
       this.$store.dispatch("save", {
         chat_id: this.$props.telegram_chat_id,
         settings: this.settings
       });
-      this.isCrowdEnabled = !this.isCrowdEnabled;
     }
   },
   components: {
@@ -146,17 +86,13 @@ export default {
     Header
   },
   computed: {
-    crowdSentimentEnabled() {
-      if (this.$store.state.settings)
-        return this.$store.state.settings.is_crowd_enabled;
-      return false;
-    },
+    ...mapGetters(["settings", "dbTransactionCurrencies"]),
     subscription: function() {
-      return util.subscription(this.$store.state.settings).plan;
+      return util.subscription(this.settings).plan;
     },
     activeIndicators: function() {
-      if (this.$store.state.settings) {
-        return this.$store.state.settings.indicators
+      if (this.settings) {
+        return this.settings.indicators
           .filter(indicator => indicator.enabled)
           .map(indicator => {
             return util.getSignalLabel(this.$store.state.signals, indicator);
@@ -170,23 +106,18 @@ export default {
       return "Crowd Sentiment";
     },
     selectedTransactionCurrencies: function() {
-      if (
-        this.$store.state.settings &&
-        this.$store.state.settings.transaction_currencies
-      )
-        return this.$store.state.settings.transaction_currencies;
+      if (this.settings && this.settings.transaction_currencies)
+        return this.settings.transaction_currencies;
 
       return "Loading...";
     },
     watchlistText: function() {
-      if (this.$store.state.settings) {
+      if (this.settings) {
         var followed = this.showFreeSettings
           ? { coins: 5, exchanges: 1 }
           : {
               coins: this.selectedTransactionCurrencies.length,
-              exchanges: this.$store.state.settings.exchanges.filter(
-                ex => ex.enabled
-              ).length
+              exchanges: this.settings.exchanges.filter(ex => ex.enabled).length
             };
 
         return `Following ${followed.coins} tickers on ${followed.exchanges} ${
@@ -194,6 +125,31 @@ export default {
         }`;
       }
       return "Loading...";
+    },
+    isCrowdEnabled: {
+      get: function() {
+        return this.settings.is_crowd_enabled;
+      },
+      set: function(crowdNewValue) {}
+    },
+    showFreeSettings: function() {
+      return util.getHighestSubscriptionLevel(this.settings) == "free";
+    },
+    subscriptionTitle: function() {
+      return this.showFreeSettings ? "Upgrade" : "View";
+    },
+    userHorizon: {
+      get: function() {
+        return this.showFreeSettings ? "short" : this.settings.horizon;
+      },
+      set: function(value) {
+        console.log(value);
+        this.saveSetting({
+          chatId: this.$props.telegram_chat_id,
+          propName: "horizon",
+          propValue: value
+        });
+      }
     }
   }
 };

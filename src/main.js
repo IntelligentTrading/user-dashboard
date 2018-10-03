@@ -26,13 +26,20 @@ Vue.config.productionTip = false
 const store = new Vuex.Store({
   state: {
     telegram_chat_id: 0,
-    settings: undefined,
-    all_transaction_currencies: []
+    settings: {},
+    all_transaction_currencies: [],
+    subscriptionTemplates: [],
+    signals: [],
+    itt_usd_rate: undefined
   },
   mutations: {
-    telegramId(state, id) {
-      console.log('saving id...')
+    telegramChatId(state, id) {
+      console.log('Saving id ' + id)
       state.telegram_chat_id = id
+      return db.loadUserSettings(id).then(user => {
+        console.log('User settings loaded...')
+        state.settings = user.settings
+      })
     },
     settings(state, settings) {
       state.settings = settings
@@ -41,27 +48,56 @@ const store = new Vuex.Store({
       state.all_transaction_currencies = transaction_currencies
     },
     indicators(state, indicators) {
-      state.indicators = indicators
+      state.settings.indicators = indicators
     },
     subscriptionTemplates(state, templates) {
       state.subscriptionTemplates = templates
     },
     exchanges(state, exchanges) {
-      state.exchanges = exchanges
+      state.settings.exchanges = exchanges
     },
-    signals(state,signals){
+    signals(state, signals) {
       state.signals = signals
     },
-    itt_usd_rate(state,itt_usd_rate){
+    itt_usd_rate(state, itt_usd_rate) {
       state.itt_usd_rate = itt_usd_rate
     }
   },
+  getters: {
+    settings(state) {
+      return state.settings
+    },
+    dbTransactionCurrencies(state) {
+      return state.all_transaction_currencies
+    }
+  },
   actions: {
-    save(context, payload) {
-
-      return db.save(payload.chat_id, payload.settings).then((response) => {
-        console.log('Settings saved')
+    async saveChatId(context, id) {
+      return await context.commit('telegramChatId', id)
+    },
+    saveSetting(context, payload) {
+      var newSettings = context.state.settings
+      newSettings[payload.propName] = payload.propValue
+      console.log(`Saving ${payload.propName}:${payload.propValue}`)
+      console.log(newSettings)
+      return db.save(payload.chatId, newSettings).then((response) => {
         return response.json().then(updatedUser => {
+          console.log('Updated user')
+          console.log(updatedUser.settings)
+          context.commit("settings", updatedUser.settings)
+        }).catch(err => {
+          alert('Error saving settings...')
+          console.log(err)
+        }).then(() => {
+          vm.$emit('save', false)
+        })
+      })
+    },
+    save(context, payload) {
+      return db.save(payload.chat_id, payload.settings).then((response) => {
+        return response.json().then(updatedUser => {
+          console.log('Updated user')
+          console.log(updatedUser.settings)
           context.commit("settings", updatedUser.settings)
         }).catch(err => {
           alert('Error saving settings...')

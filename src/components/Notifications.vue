@@ -72,10 +72,8 @@ export default {
   name: "Notifications",
   data() {
     return {
-      settings: this.$store.state.settings,
       disabledSwitch: false,
       enabledSwitch: true,
-      subscriptionTemplates: this.$store.state.subscriptionTemplates,
       subscription: "Upgrade to unlock custom selection.",
       showUpgrade:
         ["free", "beta"].indexOf(
@@ -86,17 +84,17 @@ export default {
   methods: {
     save: function(setting, type) {
       if (type == "i")
-        this.settings.indicators.find(
+        this.localSettings.indicators.find(
           ind => ind.name == setting.name
         ).enabled = !setting.enabled;
       if (type == "e")
-        this.settings.exchanges.find(
+        this.localSettings.exchanges.find(
           exc => exc.label == setting.label
         ).enabled = !setting.enabled;
 
       this.$store.dispatch("save", {
         chat_id: this.$store.state.telegram_chat_id,
-        settings: this.settings
+        settings: this.localSettings
       });
     },
     goToUpgrade() {
@@ -117,8 +115,11 @@ export default {
     UpgradeSettingsButton
   },
   computed: {
+    localSettings: function() {
+      return this.$store.getters.settings
+    },
     subscriptionPlan: function() {
-      return util.getHighestSubscriptionLevel(this.$store.state.settings);
+      return util.getHighestSubscriptionLevel(this.localSettings);
     },
     subscriptionTemplate: function() {
       var planFilter =
@@ -128,18 +129,18 @@ export default {
       )[0];
     },
     exchanges: function() {
-      return this.$store.state.settings.exchanges.map(ex =>
+      return this.localSettings.exchanges.map(ex =>
         buildExchangeAvailability(
-          this.$store.state.settings,
+          this.localSettings,
           ex,
-          this.subscriptionTemplates
+          this.$store.state.subscriptionTemplates
         )
       );
     },
     indicators: function() {
-      return this.$store.state.settings.indicators.map(ind =>
+      return this.localSettings.indicators.map(ind =>
         buildIndicatorAvailability(
-          this.$store.state.settings,
+          this.localSettings,
           ind,
           this.$store.state.signals
         )
