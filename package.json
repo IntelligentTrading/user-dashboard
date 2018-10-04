@@ -16,6 +16,7 @@
     "element-ui": "^2.4.7",
     "express": "*",
     "moment": "^2.22.2",
+    "lodash":"^4.17.11",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "vue": "^2.5.2",

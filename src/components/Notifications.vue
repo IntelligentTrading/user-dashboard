@@ -25,83 +25,38 @@
 <script>
 import Header from "./Header.vue";
 import UpgradeSettingsButton from "./UpgradeSettingsButton";
-import util from "../util";
-
-function buildExchangeAvailability(settings, exchange, subscriptionTemplates) {
-  var highestSubscriptionLevel = util.getHighestSubscriptionLevel(settings);
-  highestSubscriptionLevel =
-    highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
-  var tooLowToEdit =
-    highestSubscriptionLevel == "free" || highestSubscriptionLevel == "beta";
-
-  var subscriptionTemplate = subscriptionTemplates.filter(
-    st => st.label == highestSubscriptionLevel
-  )[0];
-  var availableForPlan =
-    !subscriptionTemplate.exchanges ||
-    subscriptionTemplate.exchanges.includes(exchange.label.toLowerCase());
-
-  exchange.canSee = true;
-  exchange.canEdit = !tooLowToEdit;
-  exchange.value = tooLowToEdit
-    ? availableForPlan
-    : settings.exchanges.filter(ex => exchange.label == ex.label)[0].enabled;
-
-  return exchange;
-}
-
-function buildIndicatorAvailability(settings, indicator, signalsTemplates) {
-  var highestSubscriptionLevel = util.getHighestSubscriptionLevel(settings);
-  highestSubscriptionLevel =
-    highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
-  var tooLowToEdit =
-    highestSubscriptionLevel == "free" || highestSubscriptionLevel == "beta";
-
-  var signal = signalsTemplates.filter(s => s.label == indicator.name)[0];
-  var availableForPlan =
-    signal.deliverTo.indexOf(highestSubscriptionLevel.toLowerCase()) >= 0;
-
-  indicator.canSee = true;
-  indicator.canEdit = !tooLowToEdit;
-  indicator.value = tooLowToEdit ? availableForPlan : indicator.enabled;
-
-  return indicator;
-}
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "Notifications",
   data() {
     return {
-      disabledSwitch: false,
-      enabledSwitch: true,
       subscription: "Upgrade to unlock custom selection.",
       showUpgrade:
-        ["free", "beta"].indexOf(
-          util.getHighestSubscriptionLevel(this.$store.state.settings)
-        ) > -1
+        ["free", "beta"].indexOf(this.subscriptionPlan) > -1
     };
   },
   methods: {
     save: function(setting, type) {
       if (type == "i")
-        this.localSettings.indicators.find(
+        this.settings.indicators.find(
           ind => ind.name == setting.name
         ).enabled = !setting.enabled;
       if (type == "e")
-        this.localSettings.exchanges.find(
+        this.settings.exchanges.find(
           exc => exc.label == setting.label
         ).enabled = !setting.enabled;
 
       this.$store.dispatch("save", {
         chat_id: this.$store.state.telegram_chat_id,
-        settings: this.localSettings
+        settings: this.settings
       });
     },
     goToUpgrade() {
       this.$router.push("/Subscription");
     },
     getSignalLabel(indicator) {
-      return util.getSignalLabel(this.$store.state.signals, indicator);
+      return this.$store.getters.signalLabel(indicator)
     },
     getSignalUserGuideUrl(signalName) {
       var signals = this.$store.state.signals;
@@ -115,36 +70,22 @@ export default {
     UpgradeSettingsButton
   },
   computed: {
-    localSettings: function() {
-      return this.$store.getters.settings
-    },
+    ...mapGetters([
+      "settings",
+      "subscriptionTemplates",
+      "indicators",
+      "exchanges",
+      "highestSubscriptionLevel"
+    ]),
     subscriptionPlan: function() {
-      return util.getHighestSubscriptionLevel(this.localSettings);
+      return this.highestSubscriptionLevel;
     },
     subscriptionTemplate: function() {
       var planFilter =
         this.subscriptionPlan == "ITT" ? "Advanced" : this.subscriptionPlan;
-      return this.$store.state.subscriptionTemplates.filter(
+      return this.subscriptionTemplates.filter(
         st => st.label == planFilter.toLowerCase()
       )[0];
-    },
-    exchanges: function() {
-      return this.localSettings.exchanges.map(ex =>
-        buildExchangeAvailability(
-          this.localSettings,
-          ex,
-          this.$store.state.subscriptionTemplates
-        )
-      );
-    },
-    indicators: function() {
-      return this.localSettings.indicators.map(ind =>
-        buildIndicatorAvailability(
-          this.localSettings,
-          ind,
-          this.$store.state.signals
-        )
-      );
     }
   }
 };

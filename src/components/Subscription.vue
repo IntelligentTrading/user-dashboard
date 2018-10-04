@@ -5,10 +5,10 @@
             </el-header> 
     <el-main>
       <el-row>
-      <label class="plan-label">{{subscriptionPlan.plan}}</label>
+      <label class="plan-label">{{subscription.plan}}</label>
       </el-row>
       <el-row>
-      <label class="exp-date">{{subscriptionPlan.daysLeft}} days left.</label>
+      <label class="exp-date">{{subscription.daysLeft}} days left.</label>
       </el-row>
       <el-row>
         <qrcode class="qrcode" v-bind:text="address"/>
@@ -53,7 +53,7 @@
 <script>
 import qrcode from "vue-qrcode-component";
 import Header from "./Header";
-import util from "../util.js";
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 
 var usdPricePerSecond = 20 * 12 / 365.25 / 24 / 3600;
 var oneMonthInSeconds = 2629746;
@@ -82,10 +82,7 @@ export default {
     }
   },
   computed: {
-    subscriptionPlan: function() {
-      var x = util.subscription(this.$store.state.settings);
-      return x;
-    },
+    ...mapGetters(['subscription']),
     requiredTokens: function() {
       if (this.itt_usd_rate)
         return Math.ceil(

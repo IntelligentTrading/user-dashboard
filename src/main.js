@@ -15,6 +15,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueClipboard from 'vue-clipboard2'
 import db from './db'
+import moment from 'moment'
+import _ from 'lodash'
 
 Vue.use(VueRouter)
 Vue.use(ElementUI)
@@ -69,35 +71,156 @@ const store = new Vuex.Store({
     },
     dbTransactionCurrencies(state) {
       return state.all_transaction_currencies
+    },
+    subscriptionTemplates(state) {
+      return state.subscriptionTemplates
+    },
+    highestSubscriptionLevel(state) {
+
+      var levels = {}
+      levels.is_ITT_team = state.settings.is_ITT_team
+      levels.isAdvanced = state.settings.staking && state.settings.staking.centomila
+      levels.isPro = state.settings.staking && state.settings.staking.diecimila
+      levels.isStarter = -1 * moment().diff(state.settings.subscriptions.paid, "days") > 0
+      levels.isFreePlus = -1 * moment().diff(state.settings.subscriptions.beta, "days") > 0
+
+      var highestLevel = 'free'
+      if (levels.is_ITT_team) highestLevel = 'ITT'
+      else if (levels.isAdvanced) highestLevel = 'centomila'
+      else if (levels.isPro) highestLevel = 'diecimila'
+      else if (levels.isStarter) highestLevel = 'paid'
+      else if (levels.isFreePlus) highestLevel = 'beta'
+
+      return highestLevel
+    },
+    indicators(state, getters) {
+
+      var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel
+      var tooLowToEdit =
+        highestSubscriptionLevelTemp == "free" || highestSubscriptionLevelTemp == "beta";
+
+      return state.settings.indicators.map(indicator => {
+
+        var signal = state.signals.filter(s => s.label == indicator.name)[0];
+        var availableForPlan =
+          signal.deliverTo.indexOf(highestSubscriptionLevelTemp.toLowerCase()) >= 0 || highestSubscriptionLevelTemp == 'ITT';
+
+        indicator.canSee = true;
+        indicator.canEdit = !tooLowToEdit;
+        indicator.value = tooLowToEdit ? availableForPlan : indicator.enabled;
+
+        return indicator;
+      })
+    },
+    exchanges(state, getters) {
+
+      var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
+      var tooLowToEdit =
+        highestSubscriptionLevelTemp == "free" || highestSubscriptionLevelTemp == "beta";
+
+      var subscriptionTemplate = state.subscriptionTemplates.filter(
+        st => st.label == highestSubscriptionLevelTemp
+      )[0];
+
+      return state.settings.exchanges.map(exchange => {
+
+        var availableForPlan =
+          !subscriptionTemplate.exchanges ||
+          subscriptionTemplate.exchanges.includes(exchange.label.toLowerCase());
+
+        exchange.canSee = true;
+        exchange.canEdit = !tooLowToEdit;
+        exchange.value = tooLowToEdit
+          ? availableForPlan
+          : exchange.enabled;
+
+        return exchange
+      })
+    },
+    subscription(state) {
+      if (!state.settings)
+        return { plan: 'Loading...', daysLeft: '0' }
+
+      if (state.settings.is_ITT_team)
+        return { plan: "Advanced (ITF Team)", daysLeft: '∞' }
+
+      if (state.settings.staking) {
+        if (settings.staking.centomila) return { plan: "Advanced", daysLeft: '∞' }
+        if (settings.staking.diecimila) return { plan: "Pro", daysLeft: '∞' }
+      }
+
+      if (state.settings.subscriptions) {
+        var paidDaysLeft =
+          Math.max(-1 * moment().diff(state.settings.subscriptions.paid, "days"), 0);
+        var betaDaysLeft =
+          Math.max(-1 * moment().diff(state.settings.subscriptions.beta, "days"), 0);
+
+        return paidDaysLeft > 0
+          ? { plan: "Starter", daysLeft: paidDaysLeft }
+          : betaDaysLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft } : { plan: "FREE", daysLeft: '∞' };
+      }
+    },
+    signalLabel: state => indicator => {
+      var match = state.signals.find(s => s.label && s.label == indicator.name);
+      return match && match.description ? match.description : indicator.name;
+    },
+    availableCounterCurrencies: (state, getters) => {
+
+      return db.COUNTER_CURRENCIES.filter(counter => counter.available).map(counter => {
+
+        var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
+        var tooLowToEdit = highestSubscriptionLevelTemp == "free";
+
+        var subscriptionTemplate = state.subscriptionTemplates.filter(
+          st => st.label == highestSubscriptionLevelTemp
+        )[0];
+
+        var availableForPlan =
+          !subscriptionTemplate.counter ||
+          subscriptionTemplate.counter.includes(counter.index);
+
+        counter.canSee = true;
+        counter.canEdit = !tooLowToEdit;
+        counter.value = tooLowToEdit
+          ? availableForPlan
+          : state.settings.counter_currencies.includes(counter.index);
+
+        return counter;
+      });
+    },
+    availableTransactionCurrencies: (state, getters) => {
+
+      var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
+      var enabledCounterCurrencies = getters.availableCounterCurrencies.filter(acc => acc.value)
+      if (!enabledCounterCurrencies || enabledCounterCurrencies.length <= 0)
+        return [];
+
+      var atcs = getters.dbTransactionCurrencies.map(ticker => {
+        var tooLowToEdit =
+          highestSubscriptionLevelTemp == "free" || (highestSubscriptionLevelTemp == "beta" && !ticker.sources.includes("poloniex"));
+
+        var subscriptionTemplate = getters.subscriptionTemplates.filter(st => st.label == highestSubscriptionLevelTemp)[0]
+        var availableForPlan = !subscriptionTemplate.tickers || subscriptionTemplate.tickers.includes(ticker.symbol)
+
+        ticker.canSee = ticker.counter_currencies.some(cc => enabledCounterCurrencies.map(ec => ec.index).includes(cc))
+        ticker.canEdit = !tooLowToEdit;
+        ticker.value = tooLowToEdit
+          ? availableForPlan
+          : state.settings.transaction_currencies.includes(ticker.symbol);
+
+        return ticker;
+      })
+
+      return _.sortBy(atcs, t => { return parseInt(t.rank) })
     }
   },
   actions: {
     async saveChatId(context, id) {
       return await context.commit('telegramChatId', id)
     },
-    saveSetting(context, payload) {
-      var newSettings = context.state.settings
-      newSettings[payload.propName] = payload.propValue
-      console.log(`Saving ${payload.propName}:${payload.propValue}`)
-      console.log(newSettings)
-      return db.save(payload.chatId, newSettings).then((response) => {
-        return response.json().then(updatedUser => {
-          console.log('Updated user')
-          console.log(updatedUser.settings)
-          context.commit("settings", updatedUser.settings)
-        }).catch(err => {
-          alert('Error saving settings...')
-          console.log(err)
-        }).then(() => {
-          vm.$emit('save', false)
-        })
-      })
-    },
     save(context, payload) {
       return db.save(payload.chat_id, payload.settings).then((response) => {
         return response.json().then(updatedUser => {
-          console.log('Updated user')
-          console.log(updatedUser.settings)
           context.commit("settings", updatedUser.settings)
         }).catch(err => {
           alert('Error saving settings...')
@@ -120,7 +243,6 @@ const store = new Vuex.Store({
     }
   }
 })
-
 
 const router = new VueRouter({
   routes: [

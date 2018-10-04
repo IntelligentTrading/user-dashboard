@@ -8,7 +8,7 @@
             <upgrade-settings-button extraClass=true actionTitle="Upgrade" v-bind:subtitle=subscription to="/Subscription" icon="fas fa-tag icons"></upgrade-settings-button>
           </el-row>
           <hr style="opacity:0.2;" />
-          <el-row :gutter="24" v-for="cc in allCounterCurriencies" :key="cc.index" class="counter-label" v-show="cc.canSee">
+          <el-row :gutter="24" v-for="cc in availableCounterCurrencies" :key="cc.index" class="counter-label" v-show="cc.canSee">
             <el-col :span="14">
               {{'alt / '+cc.symbol}}
             </el-col>
@@ -48,92 +48,20 @@ import _ from "lodash";
 import Header from "./Header.vue";
 import UpgradeSettingsButton from "./UpgradeSettingsButton";
 import db from "../db";
-import util from "../util";
-
-function isCounterAvailableFor(settings, counter, subscriptionTemplates) {
-  var highestSubscriptionLevel = util.getHighestSubscriptionLevel(settings);
-  highestSubscriptionLevel =
-    highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
-  var tooLowToEdit = highestSubscriptionLevel == "free";
-
-  var subscriptionTemplate = subscriptionTemplates.filter(
-    st => st.label == highestSubscriptionLevel
-  )[0];
-  var availableForPlan =
-    !subscriptionTemplate.counter ||
-    subscriptionTemplate.counter.includes(counter.index);
-
-  counter.canSee = true;
-  counter.canEdit = !tooLowToEdit;
-  counter.value = tooLowToEdit
-    ? availableForPlan
-    : settings.counter_currencies.includes(counter.index);
-
-  return counter;
-}
-
-function isCoinAvailableFor(
-  settings,
-  ticker,
-  subscriptionTemplates,
-  enabledCounterCurrencies
-) {
-  var highestSubscriptionLevel = util.getHighestSubscriptionLevel(settings);
-  highestSubscriptionLevel =
-    highestSubscriptionLevel == "ITT" ? "centomila" : highestSubscriptionLevel;
-  var tooLowToEdit =
-    highestSubscriptionLevel == "free" ||
-    (highestSubscriptionLevel == "beta" &&
-      !ticker.sources.includes("poloniex"));
-
-  var subscriptionTemplate = subscriptionTemplates.filter(
-    st => st.label == highestSubscriptionLevel
-  )[0];
-  var availableForPlan =
-    !subscriptionTemplate.tickers ||
-    subscriptionTemplate.tickers.includes(ticker.symbol);
-
-  ticker.canSee = tradesAgainstSelectedCounters(
-    ticker,
-    enabledCounterCurrencies
-  );
-  ticker.canEdit = !tooLowToEdit;
-  ticker.value = tooLowToEdit
-    ? availableForPlan
-    : settings.transaction_currencies.includes(ticker.symbol);
-
-  return ticker;
-}
-
-function tradesAgainstSelectedCounters(ticker, enabledCounterCurrencies) {
-  var tradeAgainstSelectedCounterCurrencies = false;
-
-  ticker.counter_currencies.forEach(cc => {
-    tradeAgainstSelectedCounterCurrencies =
-      tradeAgainstSelectedCounterCurrencies ||
-      enabledCounterCurrencies.map(ec => ec.index).includes(cc);
-  });
-  return tradeAgainstSelectedCounterCurrencies;
-}
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 
 export default {
   data: function() {
     return {
       search: "",
-      settings: this.$store.state.settings,
-      subscriptionTemplates: this.$store.state.subscriptionTemplates,
-      dbTransactionCurrencies: this.$store.state.all_transaction_currencies,
       subscription: "Upgrade to unlock custom selection.",
       showFooter:
-        ["free", "beta"].indexOf(
-          util.getHighestSubscriptionLevel(this.$store.state.settings)
-        ) < 0,
+        ["free", "beta"].indexOf(this.$store.getters.highestSubscriptionLevel) <
+        0,
       showUpgrade:
-        ["free", "beta"].indexOf(
-          util.getHighestSubscriptionLevel(this.$store.state.settings)
-        ) > -1,
-      disableSearch:
-        util.getHighestSubscriptionLevel(this.$store.state.settings) == "free"
+        ["free", "beta"].indexOf(this.$store.getters.highestSubscriptionLevel) >
+        -1,
+      disableSearch: this.$store.getters.highestSubscriptionLevel == "free"
     };
   },
   methods: {
@@ -186,48 +114,26 @@ export default {
     }
   },
   computed: {
-    resetting: function() {
-      return false;
-    },
+    ...mapGetters([
+      "highestSubscriptionLevel",
+      "settings",
+      "subscriptionTemplates",
+      "dbTransactionCurrencies",
+      "availableTransactionCurrencies",
+      "availableCounterCurrencies"
+    ]),
     filteredTransactionCurrencies: function() {
-      var enabledCounterCurrencies = this.allCounterCurriencies.filter(
-        acc => acc.value
-      );
-      if (!enabledCounterCurrencies || enabledCounterCurrencies.length <= 0)
-        return [];
-
-      var allTransactionCurrencies = _.sortBy(
-        this.dbTransactionCurrencies.map(tc => {
-          return isCoinAvailableFor(
-            this.$store.state.settings,
-            tc,
-            this.subscriptionTemplates,
-            enabledCounterCurrencies
-          );
-        }),
-        t => {
-          return parseInt(t.rank);
-        }
-      );
-
-      allTransactionCurrencies.forEach(t => {
-        t.canSee =
-          t.canSee &&
+      
+      return this.availableTransactionCurrencies.filter(t => {
+        
+          return t.canSee &&
           (this.search == "" ||
             t.name.toLowerCase().startsWith(this.search.toLowerCase()) ||
             t.symbol.toLowerCase().startsWith(this.search.toLowerCase()));
       });
-
-      return allTransactionCurrencies;
     },
-    allCounterCurriencies: function() {
-      return db.COUNTER_CURRENCIES.filter(cc => cc.available).map(cc => {
-        return isCounterAvailableFor(
-          this.$store.state.settings,
-          cc,
-          this.subscriptionTemplates
-        );
-      });
+    resetting: function() {
+      return false;
     }
   },
   components: {
@@ -282,7 +188,7 @@ export default {
   border-radius: 8px;
 }
 
-.noShowBadge{
+.noShowBadge {
   opacity: 0;
 }
 </style>

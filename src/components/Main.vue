@@ -9,7 +9,7 @@
         <el-main>
             <div class="settings-label">Intelligent Trading Account</div>
             <settings-button class="nocursor" subtitle="Telegram ID" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
-            <settings-button :actionTitle=subscriptionTitle  :extraClass='this.showFreeSettings' :hideNavArrow='this.showFreeSettings' subtitle="Subscription" v-bind:currentOptionValue="subscription" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
+            <settings-button :actionTitle=subscriptionTitle  :extraClass='this.showFreeSettings' :hideNavArrow='this.showFreeSettings' subtitle="Subscription" v-bind:currentOptionValue="subscription.plan" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
             <div class="settings-label">Signals</div>
             <settings-button actionTitle="Edit" subtitle="Alerts & Indicators" v-bind:currentOptionValue="activeIndicators" icon="fas fa-bell icons" to="/Notifications"></settings-button>
             <div class="switch-settings-button">
@@ -47,7 +47,6 @@ import Header from "./Header.vue";
 import SettingsButton from "./SettingsButton";
 import moment from "moment";
 import db from "../db";
-import util from "../util";
 
 var loading = null;
 
@@ -72,7 +71,6 @@ export default {
   },
   methods: {
     ...mapMutations(["telegramChatId"]),
-    ...mapActions(["saveSetting"]),
     saveCrowd: function() {
       this.settings.is_crowd_enabled = !this.isCrowdEnabled;
       this.$store.dispatch("save", {
@@ -86,16 +84,19 @@ export default {
     Header
   },
   computed: {
-    ...mapGetters(["settings", "dbTransactionCurrencies"]),
-    subscription: function() {
-      return util.subscription(this.settings).plan;
-    },
+    ...mapGetters([
+      "settings",
+      "dbTransactionCurrencies",
+      "subscription",
+      "highestSubscriptionLevel",
+      "signalLabel"
+    ]),
     activeIndicators: function() {
       if (this.settings) {
         return this.settings.indicators
           .filter(indicator => indicator.enabled)
           .map(indicator => {
-            return util.getSignalLabel(this.$store.state.signals, indicator);
+            return this.signalLabel(indicator);
           })
           .slice(0, 3)
           .join(", ");
@@ -133,7 +134,7 @@ export default {
       set: function(crowdNewValue) {}
     },
     showFreeSettings: function() {
-      return util.getHighestSubscriptionLevel(this.settings) == "free";
+      return this.highestSubscriptionLevel == "free";
     },
     subscriptionTitle: function() {
       return this.showFreeSettings ? "Upgrade" : "View";
@@ -143,11 +144,10 @@ export default {
         return this.showFreeSettings ? "short" : this.settings.horizon;
       },
       set: function(value) {
-        console.log(value);
-        this.saveSetting({
-          chatId: this.$props.telegram_chat_id,
-          propName: "horizon",
-          propValue: value
+        this.settings.horizon = value;
+        this.$store.dispatch("save", {
+          chat_id: this.$props.telegram_chat_id,
+          settings: this.settings
         });
       }
     }
