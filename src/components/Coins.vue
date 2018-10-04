@@ -23,11 +23,11 @@
           </el-row>
           <el-row>
             <div class="coin-table">
-              <el-row class="cryptorow" :gutter="24" v-show=tc.canSee v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol">
+              <el-row class="cryptorow" :gutter="24" v-show=tc.canSee v-for="tc in filteredTransactionCurrencies" v-bind:key="tc.symbol" :disabled=!tc.canEdit>
                 <el-col v-bind:class="{isNotAvailable:!tc.canEdit }" :span="14" v-text='tc.name' style="text-align:left"></el-col>
                 <el-col v-bind:class="{isNotAvailable:!tc.canEdit }" :span="4" v-text="tc.symbol" style="font-size:8px; padding-top:6px"></el-col>
                 <el-col class="switch-col" :span="6">
-                  <el-switch v-show=tc.canEdit v-model="tc.value" @change="onChange(tc.symbol,tc.value)" :disabled="!tc.canEdit" />
+                  <el-switch v-model="tc.value" @change="onChange(tc.symbol,tc.value)" :disabled="!tc.canEdit" />
                   </el-col>
               </el-row>
             </div>
