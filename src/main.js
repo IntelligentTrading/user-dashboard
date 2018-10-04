@@ -145,8 +145,8 @@ const store = new Vuex.Store({
         return { plan: "Advanced (ITF Team)", daysLeft: '∞' }
 
       if (state.settings.staking) {
-        if (settings.staking.centomila) return { plan: "Advanced", daysLeft: '∞' }
-        if (settings.staking.diecimila) return { plan: "Pro", daysLeft: '∞' }
+        if (state.settings.staking.centomila) return { plan: "Advanced", daysLeft: '∞' }
+        if (state.settings.staking.diecimila) return { plan: "Pro", daysLeft: '∞' }
       }
 
       if (state.settings.subscriptions) {
