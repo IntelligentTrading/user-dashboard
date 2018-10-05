@@ -69,6 +69,15 @@ export default {
     this.dataLoaded = true;
     this.$emit("loaded", true);
   },
+  beforeMount() {
+    console.log("Checking user settings existance...");
+    if (this.settings.subscriptions != undefined)
+      console.log("Rendering user settings");
+    else {
+      console.log("No user settings found, reloading...");
+      this.$router.push(`/Me/${this.$props.token}`);
+    }
+  },
   methods: {
     ...mapMutations(["telegramChatId"]),
     saveCrowd: function() {
