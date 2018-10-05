@@ -218,7 +218,7 @@ const store = new Vuex.Store({
     async saveChatId(context, id) {
       return await context.commit('telegramChatId', id)
     },
-    save(context, payload) {
+    async save(context, payload) {
       return db.save(payload.chat_id, payload.settings).then((response) => {
         return response.json().then(updatedUser => {
           context.commit("settings", updatedUser.settings)

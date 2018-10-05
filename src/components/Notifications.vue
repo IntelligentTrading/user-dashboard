@@ -33,7 +33,7 @@ export default {
     return {
       subscription: "Upgrade to unlock custom selection.",
       showUpgrade:
-        ["free", "beta"].indexOf(this.subscriptionPlan) > -1
+        ["free", "beta"].indexOf(this.$store.getters.highestSubscriptionLevel) > -1
     };
   },
   methods: {

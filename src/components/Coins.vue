@@ -27,7 +27,7 @@
                 <el-col v-bind:class="{isNotAvailable:!tc.canEdit }" :span="14" v-text='tc.name' style="text-align:left"></el-col>
                 <el-col v-bind:class="{isNotAvailable:!tc.canEdit }" :span="4" v-text="tc.symbol" style="font-size:8px; padding-top:6px"></el-col>
                 <el-col class="switch-col" :span="6">
-                  <el-switch v-model="tc.value" @change="onChange(tc.symbol,tc.value)" :disabled="!tc.canEdit" />
+                  <el-switch :value="tc.value" @change="onChange(tc)" :disabled="!tc.canEdit" />
                   </el-col>
               </el-row>
             </div>
@@ -83,16 +83,21 @@ export default {
       this.$store.dispatch("resetCoinsToDefault");
       this.$forceUpdate();
     },
-    onChange: function(symbol, enabled) {
-      if (enabled) this.settings.transaction_currencies.push(symbol);
+    onChange: function(ticker) {
+      if (!ticker.value)
+        this.settings.transaction_currencies.push(ticker.symbol);
       else
         this.settings.transaction_currencies = this.settings.transaction_currencies.filter(
-          t => t != symbol
+          t => t != ticker.symbol
         );
 
-      this.$store.dispatch("save", {
-        chat_id: this.$store.state.telegram_chat_id,
-        settings: this.settings
+      ticker.value = !ticker.value
+      
+      this.$nextTick().then(() => {
+        this.$store.dispatch("save", {
+          chat_id: this.$store.state.telegram_chat_id,
+          settings: this.settings
+        });
       });
 
       //this.$forceUpdate();
@@ -123,13 +128,13 @@ export default {
       "availableCounterCurrencies"
     ]),
     filteredTransactionCurrencies: function() {
-      
       return this.availableTransactionCurrencies.filter(t => {
-        
-          return t.canSee &&
+        return (
+          t.canSee &&
           (this.search == "" ||
             t.name.toLowerCase().startsWith(this.search.toLowerCase()) ||
-            t.symbol.toLowerCase().startsWith(this.search.toLowerCase()));
+            t.symbol.toLowerCase().startsWith(this.search.toLowerCase()))
+        );
       });
     },
     resetting: function() {
