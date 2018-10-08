@@ -10,6 +10,7 @@ export default {
   mounted() {
     var tokenJsonString = Buffer.from(this.$props.token, "base64").toString();
     var token = JSON.parse(tokenJsonString);
+    this.$store.dispatch("storeToken", this.$props.token);
     this.$store.dispatch("saveChatId", token.telegram_chat_id).then(() => {
       console.log("Loading backend data...");
       Promise.all([
@@ -26,7 +27,7 @@ export default {
         })
         .then(() => {
           console.log("Redirecting to Main page...");
-          this.$router.push(`/Main/${this.token}/${token.telegram_chat_id}`);
+          this.$router.push(`/Main/${this.token}/`);
         });
     });
   }

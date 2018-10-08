@@ -52,7 +52,7 @@ var loading = null;
 
 export default {
   name: "Main",
-  props: ["token", "telegram_chat_id"],
+  props:['token'],
   data() {
     return {
       logo: logo,
@@ -66,6 +66,7 @@ export default {
     };
   },
   created() {
+    console.log('Page created')
     this.dataLoaded = true;
     this.$emit("loaded", true);
   },
@@ -75,7 +76,7 @@ export default {
       console.log("Rendering user settings");
     else {
       console.log("No user settings found, reloading...");
-      this.$router.push(`/Me/${this.$props.token}`);
+      this.$router.push(`/Me/`+localStorage.token);
     }
   },
   methods: {
@@ -83,7 +84,7 @@ export default {
     saveCrowd: function() {
       this.settings.is_crowd_enabled = !this.isCrowdEnabled;
       this.$store.dispatch("save", {
-        chat_id: this.$props.telegram_chat_id,
+        chat_id: this.telegram_chat_id,
         settings: this.settings
       });
     }
@@ -98,7 +99,8 @@ export default {
       "dbTransactionCurrencies",
       "subscription",
       "highestSubscriptionLevel",
-      "signalLabel"
+      "signalLabel",
+      "telegram_chat_id"
     ]),
     activeIndicators: function() {
       if (this.settings) {
@@ -155,7 +157,7 @@ export default {
       set: function(value) {
         this.settings.horizon = value;
         this.$store.dispatch("save", {
-          chat_id: this.$props.telegram_chat_id,
+          chat_id: this.telegram_chat_id,
           settings: this.settings
         });
       }

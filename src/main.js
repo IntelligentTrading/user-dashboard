@@ -32,9 +32,15 @@ const store = new Vuex.Store({
     all_transaction_currencies: [],
     subscriptionTemplates: [],
     signals: [],
-    itt_usd_rate: undefined
+    itt_usd_rate: undefined,
+    token: undefined
   },
   mutations: {
+    token(state, token) {
+      console.log('Saving token')
+      localStorage.setItem('token', token)
+      state.token = token
+    },
     telegramChatId(state, id) {
       console.log('Saving id ' + id)
       state.telegram_chat_id = id
@@ -66,6 +72,9 @@ const store = new Vuex.Store({
     }
   },
   getters: {
+    telegram_chat_id(state) {
+      return state.telegram_chat_id
+    },
     settings(state) {
       return state.settings
     },
@@ -215,6 +224,9 @@ const store = new Vuex.Store({
     }
   },
   actions: {
+    storeToken(context, token) {
+      context.commit('token', token)
+    },
     async saveChatId(context, id) {
       return await context.commit('telegramChatId', id)
     },
@@ -252,7 +264,7 @@ const router = new VueRouter({
       props: true
     },
     {
-      path: '/main/:token/:telegram_chat_id',
+      path: '/main/:token',
       component: Main,
       props: true
     },
@@ -285,6 +297,19 @@ const router = new VueRouter({
       name: 'ErrorPage'
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  console.log(from.fullPath)
+  console.log(to.fullPath)
+
+  if (to.fullPath == '/error') {
+    next()
+  }
+  else if (to.fullPath.split('/')[1] != 'Me' && (!store.state.settings || !store.state.settings.subscriptions)) {
+    localStorage.token ? next('/Me/' + localStorage.token) : next('/error')
+  }
+  next()
 })
 
 /* eslint-disable no-new */
