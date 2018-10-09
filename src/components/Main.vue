@@ -66,12 +66,10 @@ export default {
     };
   },
   created() {
-    console.log('Page created')
     this.dataLoaded = true;
     this.$emit("loaded", true);
   },
   beforeMount() {
-    console.log("Checking user settings existance...");
     if (this.settings.subscriptions != undefined)
       console.log("Rendering user settings");
     else {

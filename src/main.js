@@ -33,6 +33,7 @@ const store = new Vuex.Store({
     subscriptionTemplates: [],
     signals: [],
     itt_usd_rate: undefined,
+    eth_usd_rate: undefined,
     token: undefined
   },
   mutations: {
@@ -69,6 +70,9 @@ const store = new Vuex.Store({
     },
     itt_usd_rate(state, itt_usd_rate) {
       state.itt_usd_rate = itt_usd_rate
+    },
+    eth_usd_rate(state, eth_usd_rate) {
+      state.eth_usd_rate = eth_usd_rate
     }
   },
   getters: {
@@ -300,9 +304,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(from.fullPath)
-  console.log(to.fullPath)
-
   if (to.fullPath == '/error') {
     next()
   }

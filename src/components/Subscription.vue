@@ -10,7 +10,16 @@
       <el-row>
       <label class="exp-date">{{subscription.daysLeft}} days left.</label>
       </el-row>
-      <el-row>
+      <el-tabs>
+         <el-tab-pane>
+          <span slot="label">Pay with ETH <i class="fab fa-ethereum"></i></span>
+          <div>
+            <component :is=CurrentPage v-bind:step.sync=step></component>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane>
+          <span slot="label">Pay with ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
+           <el-row>
         <qrcode class="qrcode" v-bind:text="address"/>
         </el-row>
         <el-row>
@@ -46,6 +55,9 @@
         Pricing info available soon...
           </label>
         </div>
+        </el-tab-pane>
+      </el-tabs>
+     
         
     </el-main>
 </el-container>
@@ -54,15 +66,16 @@
 import qrcode from "vue-qrcode-component";
 import Header from "./Header";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-
-var usdPricePerSecond = 20 * 12 / 365.25 / 24 / 3600;
-var oneMonthInSeconds = 2629746;
+import SendEth from "./PaymentWizard/SendEth";
+import Sign from "./PaymentWizard/Sign";
+import constant from "../constant";
 
 export default {
   name: "Subscription",
-  components: { qrcode, Header },
+  components: { qrcode, Header, SendEth, Sign },
   data() {
     return {
+      step: 0,
       address: this.$store.state.settings.ittWalletReceiverAddress,
       itt_usd_rate: this.$store.state.itt_usd_rate
     };
@@ -77,36 +90,49 @@ export default {
     goBack: function() {
       this.$router.go(-1);
     },
-    openBlank: function(link){
-      window.open(link,'_blank')
+    openBlank: function(link) {
+      window.open(link, "_blank");
     }
   },
   computed: {
-    ...mapGetters(['subscription']),
+    ...mapGetters(["subscription"]),
     requiredTokens: function() {
       if (this.itt_usd_rate)
         return Math.ceil(
-          oneMonthInSeconds * usdPricePerSecond / this.itt_usd_rate
+          (constant.oneMonthInSeconds * constant.usdPricePerSecond) /
+            this.itt_usd_rate
         );
       else "N/A";
+    },
+    CurrentPage: function() {
+      var pages = [SendEth, Sign];
+      return pages[this.step];
+    },
+    CurrentStepLabel: function() {
+      var labels = ["Sign your transaction", "Verify", "Done!"];
+      return labels[this.step];
     }
   }
 };
 </script>
 <style>
-.qr-info{
-  color:#2a4d96;
+.qr-info {
+  color: #2a4d96;
   font-weight: bold;
-  font-size: 16px; 
+  font-size: 16px;
 }
 
 .pricing-info {
-  font-size: 42px;
-  font-family: "helvetica neue";
+  font-size: 32px;
   border-radius: 5px;
   padding: 5px;
-  font-weight: 100;
+  font-weight: 400;
   margin: 5px;
+}
+
+.pricing-subtitle {
+  font-size: 10px;
+  font-weight: 200;
 }
 
 .pricing-info-soon {
@@ -131,11 +157,10 @@ export default {
 }
 
 .qrcode {
-display: inline-block;
+  display: inline-block;
 }
 
-.qrcode>img {
-  
+.qrcode > img {
   margin-top: 20px;
   width: 200px;
   height: 200px;
@@ -151,5 +176,17 @@ display: inline-block;
 
 .exp-date {
   font-size: 13px;
+}
+
+.steps {
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.stepButton {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 90%;
 }
 </style>

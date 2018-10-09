@@ -17,13 +17,15 @@ export default {
         db.loadTransactionCurrencies(),
         db.loadSignals(),
         db.loadIttPrice(),
-        db.loadSubscriptionTemplates()
+        db.loadSubscriptionTemplates(),
+        db.loadEthPrice()
       ])
         .then(fulfillments => {
           this.$store.commit("all_transaction_currencies", fulfillments[0]);
           this.$store.commit("signals", fulfillments[1]);
           this.$store.commit("itt_usd_rate", fulfillments[2]);
           this.$store.commit("subscriptionTemplates", fulfillments[3]);
+          this.$store.commit("eth_usd_rate", fulfillments[4][0].price_usd);
         })
         .then(() => {
           console.log("Redirecting to Main page...");
