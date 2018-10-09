@@ -14,7 +14,7 @@
          <el-tab-pane>
           <span slot="label">Pay with ETH <i class="fab fa-ethereum"></i></span>
           <div>
-            <component :is=CurrentPage v-bind:step.sync=step></component>
+            <component :is=CurrentPage v-bind:step.sync=step :payload.sync=payload></component>
             </div>
         </el-tab-pane>
         <el-tab-pane>
@@ -68,6 +68,7 @@ import Header from "./Header";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import SendEth from "./PaymentWizard/SendEth";
 import Sign from "./PaymentWizard/Sign";
+import Done from "./PaymentWizard/Done";
 import constant from "../constant";
 
 export default {
@@ -77,7 +78,8 @@ export default {
     return {
       step: 0,
       address: this.$store.state.settings.ittWalletReceiverAddress,
-      itt_usd_rate: this.$store.state.itt_usd_rate
+      itt_usd_rate: this.$store.state.itt_usd_rate,
+      payload: undefined
     };
   },
   methods: {
@@ -105,7 +107,7 @@ export default {
       else "N/A";
     },
     CurrentPage: function() {
-      var pages = [SendEth, Sign];
+      var pages = [SendEth, Sign, Done];
       return pages[this.step];
     },
     CurrentStepLabel: function() {
@@ -184,9 +186,13 @@ export default {
 }
 
 .stepButton {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 90%;
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+  width: 90%;
 }
 </style>
