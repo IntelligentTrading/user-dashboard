@@ -8,11 +8,11 @@
         </el-row>
         <el-row>
             <div v-show="this.eth_usd_rate != null" style="margin-top: 20px;">
-          <el-row  style="margin-top:10px;">
-              <el-col :span="8" style='text-align:right;padding:10px;font-size:32px'>
+          <el-row class=flexrow  style="margin-top:10px;">
+              <div class=crownico >
                   <i class="fas fa-crown"></i>
-              </el-col>
-              <el-col :span="16" class="pricing-col">
+              </div>
+              <div class="pricing-col">
           <label class="plan-info">Starter</label>
           <br/>
           <label class="pricing-info">{{requiredTokens}} ETH/mo</label>
@@ -20,7 +20,7 @@
           <label class="pricing-subtitle">
             1 ETH = ${{Math.round(parseFloat(this.eth_usd_rate))}} USDT = {{(1/requiredTokens).toFixed(1)}} months
           </label>
-              </el-col>
+              </div>
         </el-row>
         </div>
         </el-row>
@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     ethAddress: function() {
-      return process.env.ITF_ETH_PAYMENT_WALLET
+      return process.env.ITF_ETH_PAYMENT_WALLET;
     },
     requiredTokens: function() {
       if (this.eth_usd_rate)
@@ -95,5 +95,31 @@ export default {
   font-size: 16px;
   padding: 0px;
   margin: 0px;
+}
+
+.flexrow {
+  margin-top: 10px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.crownico {
+  text-align: right;
+  padding: 10px;
+  font-size: 32px;
+  max-width: 50%;
+}
+
+
+.stepButton {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+  width: 90%;
 }
 </style>

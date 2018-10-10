@@ -8,11 +8,11 @@
         </el-row>
         <el-row>
             <div v-show="this.itt_usd_rate != null" style="margin-top: 20px;">
-          <el-row  style="margin-top:10px;">
-              <el-col :span="8" style='text-align:right;padding:10px;font-size:32px'>
+          <el-row class=flexrow>
+              <div class=crownico>
                   <i class="fas fa-crown"></i>
-              </el-col>
-              <el-col :span="16" class="pricing-col">
+              </div>
+              <div class=pricing-col>
           <label class="plan-info">Starter</label>
           <br/>
           <label class="pricing-info">{{Math.round(requiredTokens)}} ITT/mo</label>
@@ -20,7 +20,7 @@
           <label class="pricing-subtitle">
             1 ITT = ${{this.itt_usd_rate}} USDT
           </label>
-              </el-col>
+              </div>
         </el-row>
         </div>
         </el-row>
@@ -107,5 +107,32 @@ a.button{
  color:#fff;
  margin-right:10px;
  padding:10px 20% 10px 20%;
+}
+
+
+.flexrow {
+  margin-top: 10px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.crownico {
+  text-align: right;
+  padding: 10px;
+  font-size: 32px;
+  max-width: 50%;
+}
+
+
+.stepButton {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+  width: 90%;
 }
 </style>

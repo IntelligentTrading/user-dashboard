@@ -304,13 +304,21 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  var destination = to.fullPath.split('/')[1]
+  var tokenPayload = to.fullPath.split('/')[2]
+
   if (to.fullPath == '/error') {
     next()
   }
-  else if (to.fullPath.split('/')[1] != 'Me' && (!store.state.settings || !store.state.settings.subscriptions)) {
-    localStorage.token ? next('/Me/' + localStorage.token) : next('/error')
+  else if (destination != 'Me' && (!store.state.settings || !store.state.settings.subscriptions)) {
+    if (localStorage.token) next('/Me/' + localStorage.token)
+    else if (tokenPayload) {
+      store.dispatch('storeToken', tokenPayload)
+      next('/Me/' + localStorage.token)
+    } else next('/error')
   }
-  next()
+  else
+    next()
 })
 
 /* eslint-disable no-new */

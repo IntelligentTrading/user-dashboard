@@ -136,14 +136,4 @@ export default {
   margin-top: 10px;
 }
 
-.stepButton {
-  position: fixed;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 800px;
-  width: 90%;
-}
 </style>
