@@ -20,7 +20,7 @@
             <el-row>
                 <el-input type="textarea" :rows="8" :placeholder=exampleSignature v-model="signatureResult"></el-input>
             </el-row>
-            <el-button type="primary" class='stepButton' :disabled="signatureResult=='' || validating" @click="validateSignature">Verify your signature <i class="fas fa-long-arrow-alt-right"></i></el-button>
+            <el-button type="primary" class='stepButton' :disabled="signatureResult=='' || validating" @click="validateSignature">{{verificationText}} <i class="fas fa-long-arrow-alt-right"></i></el-button>
     </div>
 </template>
 <script>
@@ -34,6 +34,7 @@ export default {
     return {
       txHash: "",
       signatureResult: "",
+      verificationText: "Verify your signature",
       validating: false,
       exampleSignature: `{
   "address": "0xe345sdcace2107d017961bcfa29f3e4065f49e",
@@ -53,15 +54,15 @@ export default {
   methods: {
     validateSignature: function() {
       var signatureObject = JSON.parse(this.signatureResult);
-      console.log({
-        ...signatureObject,
-        telegram_chat_id: this.telegram_chat_id
-      });
-      db.verifySignature(JSON.stringify({
-        ...signatureObject,
-        telegram_chat_id: this.telegram_chat_id
-      })).then(result => {
-        console.log(result);
+      this.validating = true;
+      this.verificationText = 'Verifying...'
+      db.verifySignature(
+        JSON.stringify({
+          ...signatureObject,
+          telegram_chat_id: this.telegram_chat_id
+        })
+      ).then(result => {
+        this.validating = false;
         this.$emit("update:payload", JSON.stringify(result));
         this.$emit("update:step", 2);
       });

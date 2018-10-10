@@ -1,13 +1,13 @@
 <template>
     <div>
         <el-row>
-            <label style='font-size:12px;font-weight:600'>Send Ethereum</label>
+            <label style='font-size:12px;font-weight:600'>Send ITT Tokens</label>
         </el-row>
         <el-row>
             <label style='font-size:10px;font-weight:200'>Tap to copy this address or scan the QR code</label>
         </el-row>
         <el-row>
-            <div v-show="this.eth_usd_rate != null" style="margin-top: 20px;">
+            <div v-show="this.itt_usd_rate != null" style="margin-top: 20px;">
           <el-row  style="margin-top:10px;">
               <el-col :span="8" style='text-align:right;padding:10px;font-size:32px'>
                   <i class="fas fa-crown"></i>
@@ -15,26 +15,28 @@
               <el-col :span="16" class="pricing-col">
           <label class="plan-info">Starter</label>
           <br/>
-          <label class="pricing-info">{{requiredTokens}} ETH/mo</label>
+          <label class="pricing-info">{{Math.round(requiredTokens)}} ITT/mo</label>
           <br/>
           <label class="pricing-subtitle">
-            1 ETH = ${{Math.round(parseFloat(this.eth_usd_rate))}} USDT = {{(1/requiredTokens).toFixed(1)}} months
+            1 ITT = ${{this.itt_usd_rate}} USDT
           </label>
               </el-col>
         </el-row>
         </div>
         </el-row>
         <el-row>
-        <qrcode class='qrcode' :text="ethAddress" @click.native='doCopy'></qrcode>
+        <qrcode class='qrcode' :text="address" @click.native='doCopy'></qrcode>
         </el-row>
         <el-row>
         <div class="container">
-          <button type="button" class="addressLabel" v-clipboard:copy="ethAddress">
-            {{ethAddress}} <i class="far fa-copy" style="color:#4ccfa6"></i>
+          <button type="button" class="addressLabel" v-clipboard:copy="address">
+            {{address}} <i class="far fa-copy" style="color:#4ccfa6"></i>
           </button>
         </div>
         </el-row>
-        <el-button type="primary" class='stepButton' @click="$emit('update:step', 1)">Sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
+        <el-row style='padding:20px'>
+          <a href='https://intelligenttrading.org/guides/how-to-buy-itt-tokens/?utm_source=TelegramBotSettings' target="_blank" class='button'>How to get ITT</a>
+        </el-row>
     </div>
 </template>
 <script>
@@ -42,34 +44,32 @@ import qrcode from "vue-qrcode-component";
 import constant from "../../constant";
 
 export default {
-  name: "SendEth",
+  name: "SendItt",
   components: { qrcode },
   data() {
     return {
-      eth_usd_rate: this.$store.state.eth_usd_rate,
       months: 1,
-      label: "ETH"
+      label: "ITT",
+      address: this.$store.state.settings.ittWalletReceiverAddress,
+      itt_usd_rate: this.$store.state.itt_usd_rate
     };
   },
   computed: {
-    ethAddress: function() {
-      return process.env.ITF_ETH_PAYMENT_WALLET
-    },
     requiredTokens: function() {
-      if (this.eth_usd_rate)
+      if (this.itt_usd_rate)
         return (
           (constant.oneMonthInSeconds * constant.usdPricePerSecond) /
-          this.eth_usd_rate
-        ).toFixed(3);
-      else "N/A";
+          this.itt_usd_rate
+        );
+      else return "N/A";
     },
     getLabel: function() {
-      return "ETH";
+      return "ITT";
     }
   },
   methods: {
     doCopy: function() {
-      this.$copyText(this.ethAddress).then(
+      this.$copyText(this.address).then(
         function(e) {
           console.log(e);
         },
@@ -77,7 +77,8 @@ export default {
           console.log(e);
         }
       );
-    }
+    },
+    openBlank: function() {}
   }
 };
 </script>
@@ -95,5 +96,16 @@ export default {
   font-size: 16px;
   padding: 0px;
   margin: 0px;
+}
+a{
+ text-decoration:none;
+}
+
+a.button{
+ background-color:lightblue;
+ border-radius:5px;
+ color:#fff;
+ margin-right:10px;
+ padding:10px 20% 10px 20%;
 }
 </style>

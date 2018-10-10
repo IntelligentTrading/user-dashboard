@@ -18,47 +18,10 @@
             </div>
         </el-tab-pane>
         <el-tab-pane>
-          <span slot="label">Pay with ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
-           <el-row>
-        <qrcode class="qrcode" v-bind:text="address"/>
-        </el-row>
-        <el-row>
-        <div class="container">
-          <button type="button" class="addressLabel" v-clipboard:copy="address" v-clipboard:success="onCopy" v-clipboard:error="onError">
-            {{address}} <i class="far fa-copy" style="color:#4ccfa6"></i>
-          </button>
-        </div>
-        </el-row>
-        <el-row style="margin-top: 20px">
-          <label class="qr-info">Send ITT tokens to this wallet address, then your subscription will be updated instantly.</label>
-        </el-row>
-        <div v-show="this.itt_usd_rate != null" style="margin-top: 20px; text-align: center;">
-          <el-row  style="margin-top:10px">
-          <label>
-          Starter plan rate
-          </label>
-          <br/>
-          <label class="pricing-info">
-        {{requiredTokens}} ITT/mo
-          </label>
-          <br/>
-          <label class="pricing-subtitle">
-            1 ITT = ${{this.itt_usd_rate}} USDT
-          </label>
-        </el-row>
-        <el-row>
-          <el-button type="success" @click="openBlank('https://intelligenttrading.org/guides/how-to-buy-itt-tokens/?utm_source=TelegramBotSettings')">How to get ITT</el-button>
-        </el-row>
-        </div>
-        <div v-show="this.itt_usd_rate == null" style="margin-top: 20px; text-align: center;">
-          <label class="pricing-info-soon">
-        Pricing info available soon...
-          </label>
-        </div>
+            <span slot="label">Pay with ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
+            <send-itt></send-itt>
         </el-tab-pane>
       </el-tabs>
-     
-        
     </el-main>
 </el-container>
 </template>
@@ -67,18 +30,17 @@ import qrcode from "vue-qrcode-component";
 import Header from "./Header";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import SendEth from "./PaymentWizard/SendEth";
+import SendItt from "./PaymentWizard/SendItt";
 import Sign from "./PaymentWizard/Sign";
 import Done from "./PaymentWizard/Done";
 import constant from "../constant";
 
 export default {
   name: "Subscription",
-  components: { qrcode, Header, SendEth, Sign },
+  components: { qrcode, Header, SendEth, Sign, SendItt },
   data() {
     return {
       step: 0,
-      address: this.$store.state.settings.ittWalletReceiverAddress,
-      itt_usd_rate: this.$store.state.itt_usd_rate,
       payload: undefined
     };
   },
@@ -91,21 +53,10 @@ export default {
     },
     goBack: function() {
       this.$router.go(-1);
-    },
-    openBlank: function(link) {
-      window.open(link, "_blank");
     }
   },
   computed: {
     ...mapGetters(["subscription"]),
-    requiredTokens: function() {
-      if (this.itt_usd_rate)
-        return Math.ceil(
-          (constant.oneMonthInSeconds * constant.usdPricePerSecond) /
-            this.itt_usd_rate
-        );
-      else "N/A";
-    },
     CurrentPage: function() {
       var pages = [SendEth, Sign, Done];
       return pages[this.step];
