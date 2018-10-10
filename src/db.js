@@ -128,6 +128,40 @@ function loadIttPrice() {
     }).catch(err => { console.log(err); return null })
 }
 
+
+function loadEthPrice() {
+
+    console.log('Fetching ETH price...')
+    return fetch(`${serviceEndpoint}/tickers/transaction_currencies/ETH`, {
+        headers: new Headers({
+            "NSVC-API-KEY": apiKey,
+            "Content-Type": "application/json",
+            "Access-Control-Request-Headers": "*",
+            "Access-Control-Request-Method": "*"
+        }),
+        mode: "cors"
+    }).then(result => {
+        return result.json();
+    });
+}
+
+function verifySignature(signature) {
+    console.log('Fetching ETH price...')
+    return fetch(`${serviceEndpoint}/payment/verifyEthTransaction`, {
+        method:'POST',
+        headers: new Headers({
+            "NSVC-API-KEY": apiKey,
+            "Content-Type": "application/json",
+            "Access-Control-Request-Headers": "*",
+            "Access-Control-Request-Method": "*"
+        }),
+        mode: "cors",
+        body: signature
+    }).then(result => {
+        return result.json();
+    });
+}
+
 export default {
     save: save,
     READABLE_SETTINGS: readableSettings,
@@ -156,5 +190,7 @@ export default {
     loadSignals: loadSignals,
     resetCoins: resetCoins,
     loadIttPrice: loadIttPrice,
-    loadSubscriptionTemplates: loadSubscriptionTemplates
+    loadSubscriptionTemplates: loadSubscriptionTemplates,
+    loadEthPrice: loadEthPrice,
+    verifySignature: verifySignature
 }

@@ -1,13 +1,7 @@
 <template>
 <div>
-  <el-row style="margin-top:20px">
-  <label>Upgrade to get all the signals and settings!</label>
-  </el-row>
-  <el-row class="pro">
-  <label >PRO</label>
-  </el-row>
-  <h1 class="price">$20/mo</h1>
-  <h4>in ITT tokens</h4>
+  <h1 class="price">Sorry</h1>
+  <h4>To keep your data safe I cannot refresh the page! Please close this page and reopen the settings from the bot!</h4>
 </div>
 </template>
 
@@ -18,19 +12,22 @@ export default {
     return {
       msg: "This is an error Page"
     };
+  },
+  created() {
+    this.$emit("loaded", true);
   }
 };
 </script>
 
 
 <style>
-.pro{
-  margin-top: 100px
+.pro {
+  margin-top: 100px;
 }
 
-.price{
-  font-family: 'Helvetica Neue';
+.price {
+  font-family: "Helvetica Neue";
   font-size: 52px;
-  font-weight: 100
+  font-weight: 100;
 }
 </style>
