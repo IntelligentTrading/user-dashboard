@@ -8,7 +8,7 @@
       <label class="plan-label">{{subscription.plan}}</label>
       </el-row>
       <el-row>
-      <label class="exp-date">{{subscription.daysLeft}} days left.</label>
+      <label class="exp-date">{{subscription.daysLeft > 0 || subscription.daysLeft == '∞' ? subscription.daysLeft+' days' : subscription.hoursLeft+' hours'}} left.</label>
       </el-row>
       <el-tabs>
          <el-tab-pane>

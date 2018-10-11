@@ -163,14 +163,18 @@ const store = new Vuex.Store({
       }
 
       if (state.settings.subscriptions) {
+        var paidHoursLeft =
+          Math.max(-1 * moment().diff(state.settings.subscriptions.paid, "hours"), 0);
+        var betaHoursLeft =
+          Math.max(-1 * moment().diff(state.settings.subscriptions.beta, "hours"), 0);
         var paidDaysLeft =
           Math.max(-1 * moment().diff(state.settings.subscriptions.paid, "days"), 0);
         var betaDaysLeft =
           Math.max(-1 * moment().diff(state.settings.subscriptions.beta, "days"), 0);
 
-        return paidDaysLeft > 0
-          ? { plan: "Starter", daysLeft: paidDaysLeft }
-          : betaDaysLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft } : { plan: "FREE", daysLeft: '∞' };
+        return paidHoursLeft > 0
+          ? { plan: "Starter", daysLeft: paidDaysLeft, hoursLeft: paidHoursLeft }
+          : betaHoursLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft, hoursLeft: betaHoursLeft } : { plan: "FREE", daysLeft: '∞' };
       }
     },
     signalLabel: state => indicator => {
