@@ -69,14 +69,15 @@ export default {
   },
   methods: {
     doCopy: function() {
-      this.$copyText(this.ethAddress).then(
-        function(e) {
-          console.log(e);
-        },
-        function(e) {
-          console.log(e);
-        }
-      );
+      this.$copyText(this.ethAddress).then(() => {
+        this.$notify({
+          title: "ITF Payment",
+          message: `${this.ethAddress} copied to clipboard`,
+          duration: 0,
+          offset: 100,
+          type: 'success'
+        });
+      });
     }
   }
 };
@@ -111,15 +112,4 @@ export default {
   max-width: 50%;
 }
 
-
-.stepButton {
-  position: fixed;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 800px;
-  width: 90%;
-}
 </style>

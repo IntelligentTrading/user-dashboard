@@ -114,9 +114,9 @@ export default {
 }
 
 .qrcode > img {
-  margin-top: 20px;
-  width: 200px;
-  height: 200px;
+  margin-top: 10px;
+  width: 150px;
+  height: 150px;
 }
 
 .plan-label {
@@ -136,4 +136,21 @@ export default {
   margin-top: 10px;
 }
 
+.stepButton {
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+  width: 90%;
+}
+
+.el-notification {
+  font-family: sans-serif;
+}
+.el-notification__content {
+  font-size: 10px;
+}
 </style>
