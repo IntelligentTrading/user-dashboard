@@ -70,12 +70,13 @@ export default {
   methods: {
     doCopy: function() {
       this.$copyText(this.address).then(
-        function(e) {
-          console.log(e);
-        },
-        function(e) {
-          console.log(e);
-        }
+        this.$notify({
+          title: "ITF Payment",
+          message: `${this.address} copied to clipboard`,
+          duration: 0,
+          offset: 100,
+          type: 'success'
+        })
       );
     },
     openBlank: function() {}
