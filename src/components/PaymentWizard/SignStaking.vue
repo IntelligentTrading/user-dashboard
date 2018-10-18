@@ -3,19 +3,11 @@
         <el-row>
             <label style='font-size:12px;font-weight:600'>Sign a message with your address</label>
         </el-row>
-        <el-row style='text-align:left'>
-            <label style='font-size:10px;font-weight:200'>1. Paste your staking wallet address in the box below</label>
-        </el-row>
-        <el-row>
-            <el-input placeholder="0x1fD19a3FB5Ec2D73440B908c8038333aeFAd1e3e4e" v-model="stakingAddress" size="mini"></el-input>
-            </el-row>
-            <el-row>
-          </el-row>
-          <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600' @click="doCopy">{{codeToSign}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
+            <el-row style='text-align:left; margin-top:10px'>
+            <label style='font-size:10px;font-weight:200'>1. Click on <span style='font-weight:600' @click="doCopy">{{codeToSign}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
             </el-row>
             <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>3. Paste the full signature result in the box below and press <b>Verify</b>.</label>
+            <label style='font-size:10px;font-weight:200'>2. Paste the full signature result in the box below and press <b>Verify</b>.</label>
             </el-row>
             <el-row>
                 <el-input type="textarea" :rows="8" :placeholder=exampleSignature v-model="signatureResult"></el-input>
@@ -50,14 +42,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["telegram_chat_id"]),
+    ...mapGetters(["telegram_chat_id", "settings"]),
     codeToSign: function() {
-      if (this.stakingAddress.length <= 0)
-        return "the string you will see here";
       return hashid.encode(this.telegram_chat_id);
     }
   },
   methods: {
+    resetText: function() {
+      this.verificationText = "Verify your signature";
+      this.validating = false;
+    },
     doCopy: function() {
       this.$copyText(this.codeToSign).then(() => {
         this.$notify({
@@ -69,21 +63,61 @@ export default {
         });
       });
     },
-    validateSignature: function() {
-      var signatureObject = JSON.parse(this.signatureResult);
-      this.validating = true;
-      this.verificationText = "Verifying...";
-      api.verifyStakingSignature(
-          JSON.stringify({
-            signature: signatureObject.sig,
-            telegram_chat_id: this.telegram_chat_id
-          })
-        )
-        .then(result => {
-          this.validating = false;
-          this.$emit("update:stakingPayload", JSON.stringify(result));
-          this.$emit("update:stakingStep", 2);
+    validateSignature: async function() {
+      var signatureObject = "";
+      try {
+        signatureObject = JSON.parse(this.signatureResult);
+        this.validating = true;
+        this.verificationText = "Verifying...";
+
+        api
+          .verifyStakingSignature(
+            JSON.stringify({
+              signature: signatureObject.sig,
+              telegram_chat_id: this.telegram_chat_id
+            })
+          )
+          .then(result => {
+            if (result.verified) {
+              api
+                .loadUserStake(this.telegram_chat_id)
+                .then(() => {
+                  this.validating = false;
+                  this.$emit("update:stakingPayload", JSON.stringify(result));
+                  this.$emit("update:stakingStep", 2);
+                })
+                .catch(err => {
+                  this.$notify({
+                    title: "Error",
+                    message: `Signature not verified. Please check address, message to sign and result and retry.`,
+                    duration: 0,
+                    offset: 100,
+                    type: "error"
+                  });
+                })
+                .then(() => {
+                  this.resetText();
+                });
+            } else {
+              this.resetText();
+              this.$notify({
+                title: "Error",
+                message: `Signature not verified. Please check address, message to sign and result and retry.`,
+                duration: 0,
+                offset: 100,
+                type: "error"
+              });
+            }
+          });
+      } catch (e) {
+        this.$notify({
+          title: "Error",
+          message: `Signature has to be full and match the format represented in the placeholder text.`,
+          duration: 0,
+          offset: 100,
+          type: "error"
         });
+      }
     }
   }
 };

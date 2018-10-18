@@ -4,7 +4,8 @@
             <label style='font-size:12px;font-weight:600'>Stake ITT</label>
         </el-row>
         <el-row>
-            <label style='font-size:10px;font-weight:200'>{{this.stakingAddress ? `Staking on ${this.stakingAddress}` : 'No staking address set.'}}</label>
+            <label @click="editAddress" v-show=!editMode style='font-size:10px;font-weight:200'>{{this.stakingAddress ? `Staking on ${this.stakingAddress}` : 'No staking address set.'}} <i class="el-icon-edit"></i></label>
+            <el-input v-show=editMode placeholder="0x1fD19a3FB5Ec2D73440B908c8038333aeFAd1e3e4e" v-model="stakingAddress" size="mini"><el-button slot="append" :disabled="this.stakingAddress == ''" icon="el-icon-check" @click="setStakingWallet"></el-button></el-input>
         </el-row>
           <br/>
           <div class="block">
@@ -30,7 +31,7 @@
         </el-row>
   </div>
           <br/>
-        <el-button type="primary" @click="$emit('update:stakingStep', 1)">Setup your staking <i class="fas fa-long-arrow-alt-right"></i></el-button>
+        <el-button type="primary" :disabled="!this.$store.state.settings.staking.walletAddress" @click="$emit('update:stakingStep', 1)">Setup your staking <i class="fas fa-long-arrow-alt-right"></i></el-button>
     </div>
 </template>
 <script>
@@ -41,7 +42,8 @@ export default {
   name: "StakeItt",
   data() {
     return {
-      stakingAddress: this.$store.state.settings.staking.walletAddress
+      stakingAddress: this.$store.state.settings.staking.walletAddress,
+      editMode: false
     };
   },
   computed: {
@@ -50,10 +52,29 @@ export default {
       return 10000 - this.stakingBalance - this.paidTokens;
     }
   },
-  methods: {}
+  methods: {
+    editAddress: function() {
+      this.editMode = true;
+    },
+    setStakingWallet: function() {
+      this.$store.dispatch("setStakingWallet", this.stakingAddress).then(() => {
+        this.editMode = false;
+        this.$notify({
+          title: "ITF Staking",
+          message: `${this.stakingAddress} set as new staking address.`,
+          duration: 0,
+          offset: 100,
+          type: "success"
+        });
+      });
+    }
+  }
 };
 </script>
 <style>
+.el-input__inner {
+  font-size: 10px;
+}
 .plan-info {
   font-size: 16px;
   font-weight: 600;

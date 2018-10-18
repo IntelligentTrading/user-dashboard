@@ -7,14 +7,8 @@
             <i v-show="stakingResult.verified" class="fas fa-coins paymentok"></i>
             <i v-show="!stakingResult.verified" class="fas fa-frown paymentko"></i>
          </el-row>
-         <el-row style='text-align:center'>
-            <label>{{stakingResult.verified?'Success!':'Unsuccessful'}}</label>
-         </el-row>
          <el-row style='text-align:center;word-break: break-all;font-size: medium;'>
-            <label>{{stakingResult.verified?'': 'Something went wrong. Double check your address and be sure the signature is correct.'}}</label>
-         </el-row>
-         <el-row v-show="stakingResult.success" style='text-align:center'>
-            Your staking address is setup correctly!
+             <el-alert :description="stakingResult.verified?'Your staking address is setup correctly!': 'Something went wrong. Double check your address and be sure the signature is correct.'" :type="stakingResult.verified?'success':'error'" :title="stakingResult.verified?'Success!':'Unsuccessful'" show-icon :closable="false"></el-alert>
          </el-row>
          <el-row style="padding:20px">
          <el-button type="primary" :disabled=this.refreshing @click="goHome">{{reloadText}}</el-button>
@@ -27,7 +21,7 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "StakingDone",
-  props: ["payload"],
+  props: ["stakingPayload"],
   data() {
     return {
       refreshing: false,
@@ -36,14 +30,14 @@ export default {
   },
   computed: {
     stakingResult: function() {
-      var stakingResult = JSON.parse(this.$props.payload);
+      var stakingResult = JSON.parse(this.$props.stakingPayload);
       return stakingResult;
     }
   },
   methods: {
     goHome: function() {
       this.refreshing = true;
-      this.reloadText = 'Redirecting...'
+      this.reloadText = "Redirecting...";
       this.$router.go("Main");
     }
   }

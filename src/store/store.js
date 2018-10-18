@@ -54,6 +54,11 @@ export default new Vuex.Store({
         },
         eth_usd_rate(state, eth_usd_rate) {
             state.eth_usd_rate = eth_usd_rate
+        },
+        stakingAddress(state, address) {
+            return api.setStakingAddress(state.telegram_chat_id, address).then(code => {
+                state.settings.staking.walletAddress = address
+            })
         }
     },
     getters: {
@@ -234,6 +239,9 @@ export default new Vuex.Store({
                     console.log(err)
                 })
             })
+        },
+        async setStakingWallet(context, address) {
+            return await context.commit('stakingAddress', address)
         },
         resetCoinsToDefault(context) {
             return api.resetCoins(context.state.telegram_chat_id).then((response) => {

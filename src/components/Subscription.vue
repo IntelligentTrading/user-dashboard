@@ -18,7 +18,7 @@
         <el-tab-pane>
             <span slot="label">Stake ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
             <div>
-            <component :is=StakingCurrentPage v-bind:stakingStep.sync=stakingStep :payload.sync=stakingPayload></component>
+            <component :is=StakingCurrentPage v-bind:stakingStep.sync=stakingStep :stakingPayload.sync=stakingPayload></component>
             </div>
         </el-tab-pane>
       </el-tabs>
@@ -33,13 +33,14 @@ import SendEth from "./PaymentWizard/SendEth";
 import SendItt from "./PaymentWizard/SendItt";
 import StakeItt from "./PaymentWizard/StakeItt";
 import SignStaking from "./PaymentWizard/SignStaking";
+import StakingDone from "./PaymentWizard/StakingDone";
 import Sign from "./PaymentWizard/Sign";
 import Done from "./PaymentWizard/Done";
 import constant from "../constant";
 
 export default {
   name: "Subscription",
-  components: { qrcode, Header, SendEth, Sign, SendItt, StakeItt, SignStaking },
+  components: { qrcode, Header, SendEth, Sign, SendItt, StakeItt, SignStaking, StakingDone },
   data() {
     return {
       step: 0,
@@ -66,7 +67,7 @@ export default {
       return pages[this.step];
     },
     StakingCurrentPage: function() {
-      var pages = [StakeItt, SignStaking, Done];
+      var pages = [StakeItt, SignStaking, StakingDone];
       return pages[this.stakingStep];
     },
     CurrentStepLabel: function() {
