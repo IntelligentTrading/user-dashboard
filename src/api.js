@@ -125,7 +125,7 @@ function loadIttPrice() {
     }).then(result => {
         console.log(result)
         return parseFloat(result.close).toFixed(3);
-    }).catch(err => { console.log(err); return null })
+    }).catch(err => { console.log('Something went wrong!'); return null })
 }
 
 
@@ -145,8 +145,24 @@ function loadEthPrice() {
     });
 }
 
-function verifySignature(signature) {
-    console.log('Fetching ETH price...')
+function verifyStakingSignature(signatureObj){
+    return fetch(`${serviceEndpoint}/staking/verify`, {
+        method:'POST',
+        headers: new Headers({
+            "NSVC-API-KEY": apiKey,
+            "Content-Type": "application/json",
+            "Access-Control-Request-Headers": "*",
+            "Access-Control-Request-Method": "*"
+        }),
+        mode: "cors",
+        body: signatureObj
+    }).then(result => {
+        return result.json();
+    });
+}
+
+function verifyEthSignature(signatureObj) {
+    console.log('Verifying ETH signature...')
     return fetch(`${serviceEndpoint}/payment/verifyEthTransaction`, {
         method:'POST',
         headers: new Headers({
@@ -156,7 +172,7 @@ function verifySignature(signature) {
             "Access-Control-Request-Method": "*"
         }),
         mode: "cors",
-        body: signature
+        body: signatureObj
     }).then(result => {
         return result.json();
     });
@@ -192,5 +208,6 @@ export default {
     loadIttPrice: loadIttPrice,
     loadSubscriptionTemplates: loadSubscriptionTemplates,
     loadEthPrice: loadEthPrice,
-    verifySignature: verifySignature
+    verifyEthSignature: verifyEthSignature,
+    verifyStakingSignature: verifyStakingSignature
 }

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import db from '../db'
+import api from '../api'
 import moment from 'moment'
 
 Vue.use(Vuex)
@@ -14,7 +14,8 @@ export default new Vuex.Store({
         signals: [],
         itt_usd_rate: undefined,
         eth_usd_rate: undefined,
-        token: undefined
+        token: undefined,
+        paidTokens: 0
     },
     mutations: {
         token(state, token) {
@@ -25,7 +26,7 @@ export default new Vuex.Store({
         telegramChatId(state, id) {
             console.log('Saving id ' + id)
             state.telegram_chat_id = id
-            return db.loadUserSettings(id).then(user => {
+            return api.loadUserSettings(id).then(user => {
                 console.log('User settings loaded...')
                 state.settings = user.settings
             })
@@ -157,13 +158,19 @@ export default new Vuex.Store({
                     : betaHoursLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft, hoursLeft: betaHoursLeft } : { plan: "FREE", daysLeft: '∞' };
             }
         },
+        paidTokens: state => {
+            return _.sum(state.settings.ittTransactions.map(tx => tx.total_in_itt))
+        },
+        stakingBalance: state => {
+            return state.settings.staking.lastRetrievedBalance
+        },
         signalLabel: state => indicator => {
             var match = state.signals.find(s => s.label && s.label == indicator.name);
             return match && match.description ? match.description : indicator.name;
         },
         availableCounterCurrencies: (state, getters) => {
 
-            return db.COUNTER_CURRENCIES.filter(counter => counter.available).map(counter => {
+            return api.COUNTER_CURRENCIES.filter(counter => counter.available).map(counter => {
 
                 var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
                 var tooLowToEdit = highestSubscriptionLevelTemp == "free";
@@ -219,7 +226,7 @@ export default new Vuex.Store({
             return await context.commit('telegramChatId', id)
         },
         async save(context, payload) {
-            return db.save(payload.chat_id, payload.settings).then((response) => {
+            return api.save(payload.chat_id, payload.settings).then((response) => {
                 return response.json().then(updatedUser => {
                     context.commit("settings", updatedUser.settings)
                 }).catch(err => {
@@ -229,7 +236,7 @@ export default new Vuex.Store({
             })
         },
         resetCoinsToDefault(context) {
-            return db.resetCoins(context.state.telegram_chat_id).then((response) => {
+            return api.resetCoins(context.state.telegram_chat_id).then((response) => {
                 console.log('Settings saved')
                 return response.json().then(updatedUser => {
                     context.commit("settings", updatedUser.settings)

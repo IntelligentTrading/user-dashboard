@@ -4,15 +4,15 @@
             <label style='font-size:12px;font-weight:600'>Sign a message with your address</label>
         </el-row>
         <el-row style='text-align:left'>
-            <label style='font-size:10px;font-weight:200'>1. Paste your Transaction hash in the box below</label>
+            <label style='font-size:10px;font-weight:200'>1. Paste your staking wallet address in the box below</label>
         </el-row>
         <el-row>
-            <el-input placeholder="0x5f365e6d3c568ab6b87f43de7958c87aa255c77ef6e63f47e932c5295866cb71" v-model="txHash" size="mini"></el-input>
+            <el-input placeholder="0x1fD19a3FB5Ec2D73440B908c8038333aeFAd1e3e4e" v-model="stakingAddress" size="mini"></el-input>
             </el-row>
             <el-row>
           </el-row>
           <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600' @click="doCopy">{{txHashNo0x}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
+            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600' @click="doCopy">{{codeToSign}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
             </el-row>
             <el-row style='text-align:left; margin-top:10px'>
             <label style='font-size:10px;font-weight:200'>3. Paste the full signature result in the box below and press <b>Verify</b>.</label>
@@ -28,13 +28,16 @@
 <script>
 import api from "../../api";
 import { mapGetters } from "vuex";
+import Hashids from "hashids";
+
+var hashid = new Hashids();
 
 export default {
   name: "Sign",
   props: ["page"],
   data() {
     return {
-      txHash: "",
+      stakingAddress: "",
       signatureResult: "",
       verificationText: "Verify your signature",
       validating: false,
@@ -48,16 +51,18 @@ export default {
   },
   computed: {
     ...mapGetters(["telegram_chat_id"]),
-    txHashNo0x: function() {
-      if (this.txHash.length <= 0) return "the string you will see here";
-      return this.txHash.startsWith("0x") ? this.txHash.slice(2) : this.txHash;
+    codeToSign: function() {
+      if (this.stakingAddress.length <= 0)
+        return "the string you will see here";
+      return hashid.encode(this.telegram_chat_id);
     }
   },
-  methods: {doCopy: function() {
-      this.$copyText(this.txHashNo0x).then(() => {
+  methods: {
+    doCopy: function() {
+      this.$copyText(this.codeToSign).then(() => {
         this.$notify({
           title: "ITF Payment",
-          message: `${this.txHashNo0x} copied to clipboard`,
+          message: `${this.codeToSign} copied to clipboard`,
           duration: 0,
           offset: 100,
           type: "success"
@@ -67,17 +72,18 @@ export default {
     validateSignature: function() {
       var signatureObject = JSON.parse(this.signatureResult);
       this.validating = true;
-      this.verificationText = 'Verifying...'
-      api.verifyEthSignature(
-        JSON.stringify({
-          ...signatureObject,
-          telegram_chat_id: this.telegram_chat_id
-        })
-      ).then(result => {
-        this.validating = false;
-        this.$emit("update:payload", JSON.stringify(result));
-        this.$emit("update:step", 2);
-      });
+      this.verificationText = "Verifying...";
+      api.verifyStakingSignature(
+          JSON.stringify({
+            signature: signatureObject.sig,
+            telegram_chat_id: this.telegram_chat_id
+          })
+        )
+        .then(result => {
+          this.validating = false;
+          this.$emit("update:stakingPayload", JSON.stringify(result));
+          this.$emit("update:stakingStep", 2);
+        });
     }
   }
 };

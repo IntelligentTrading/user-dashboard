@@ -10,7 +10,7 @@
             <div v-show="this.eth_usd_rate != null" style="margin-top: 20px;">
           <el-row class=flexrow  style="margin-top:10px;">
               <div class=crownico >
-                  <i class="fas fa-crown"></i>
+                  <i class="fas fa-chess-knight"></i>
               </div>
               <div class="pricing-col">
           <label class="plan-info">Starter</label>
@@ -34,7 +34,9 @@
           </button>
         </div>
         </el-row>
-        <el-button type="primary" class='stepButton' @click="$emit('update:step', 1)">Sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
+        <el-row style="padding:20px">
+        <el-button type="primary" @click="$emit('update:step', 1)">Sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
+        </el-row>
     </div>
 </template>
 <script>
