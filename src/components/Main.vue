@@ -9,7 +9,7 @@
         <el-main>
             <div class="settings-label">Intelligent Trading Account</div>
             <settings-button class="nocursor" subtitle="Telegram ID" v-bind:currentOptionValue=this.telegram_chat_id icon="fab fa-telegram-plane icons"></settings-button>
-            <settings-button :actionTitle=subscriptionTitle  :extraClass='this.showFreeSettings' :hideNavArrow='this.showFreeSettings' subtitle="Subscription" v-bind:currentOptionValue="subscription.plan" to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
+            <settings-button :actionTitle=subscriptionTitle  :extraClass='this.showFreeSettings' :hideNavArrow='this.showFreeSettings' subtitle="Subscription" v-bind:currentOptionValue='subscriptionDescription' to="/Subscription" icon="fas fa-dollar-sign icons"></settings-button>
             <div class="settings-label">Signals</div>
             <settings-button actionTitle="Edit" subtitle="Alerts & Indicators" v-bind:currentOptionValue="activeIndicators" icon="fas fa-bell icons" to="/Notifications"></settings-button>
             <div class="switch-settings-button">
@@ -46,13 +46,13 @@ import logo from "../assets/itf.jpg";
 import Header from "./Header.vue";
 import SettingsButton from "./SettingsButton";
 import moment from "moment";
-import db from "../db";
+import api from "../api";
 
 var loading = null;
 
 export default {
   name: "Main",
-  props:['token'],
+  props: ["token"],
   data() {
     return {
       logo: logo,
@@ -60,7 +60,7 @@ export default {
       showSuccess: false,
       showError: false,
       dataLoaded: false,
-      allCounterCurrencies: db.COUNTER_CURRENCIES,
+      allCounterCurrencies: api.COUNTER_CURRENCIES,
       inProgress: false,
       percentage: 0
     };
@@ -74,7 +74,7 @@ export default {
       console.log("Rendering user settings");
     else {
       console.log("No user settings found, reloading...");
-      this.$router.push(`/Me/`+localStorage.token);
+      this.$router.push(`/Me/` + localStorage.token);
     }
   },
   methods: {
@@ -100,6 +100,16 @@ export default {
       "signalLabel",
       "telegram_chat_id"
     ]),
+    subscriptionDescription: function() {
+      if (this.settings.staking.diecimila)
+        return `${this.subscription.plan}, staking active.`;
+
+      var daysLeft =
+        this.subscription.daysLeft > 0 || this.subscription.daysLeft == "∞"
+          ? this.subscription.daysLeft + " days left"
+          : this.subscription.hoursLeft + " hours left";
+      return `${this.subscription.plan}, ${daysLeft}`;
+    },
     activeIndicators: function() {
       if (this.settings) {
         return this.settings.indicators

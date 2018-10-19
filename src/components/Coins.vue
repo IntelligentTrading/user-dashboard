@@ -47,7 +47,7 @@
 import _ from "lodash";
 import Header from "./Header.vue";
 import UpgradeSettingsButton from "./UpgradeSettingsButton";
-import db from "../db";
+import api from "../api";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 
 export default {

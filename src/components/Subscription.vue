@@ -4,12 +4,6 @@
             <Header title="Subscriptions" />
             </el-header> 
     <el-main>
-      <el-row>
-      <label class="plan-label">{{subscription.plan}}</label>
-      </el-row>
-      <el-row>
-      <label class="exp-date">{{subscription.daysLeft > 0 || subscription.daysLeft == '∞' ? subscription.daysLeft+' days' : subscription.hoursLeft+' hours'}} left.</label>
-      </el-row>
       <el-tabs>
          <el-tab-pane>
           <span slot="label">Pay with ETH <i class="fab fa-ethereum"></i></span>
@@ -21,6 +15,12 @@
             <span slot="label">Pay with ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
             <send-itt></send-itt>
         </el-tab-pane>
+        <el-tab-pane>
+            <span slot="label">Stake ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
+            <div>
+            <component :is=StakingCurrentPage v-bind:stakingStep.sync=stakingStep :stakingPayload.sync=stakingPayload></component>
+            </div>
+        </el-tab-pane>
       </el-tabs>
     </el-main>
 </el-container>
@@ -31,17 +31,22 @@ import Header from "./Header";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 import SendEth from "./PaymentWizard/SendEth";
 import SendItt from "./PaymentWizard/SendItt";
+import StakeItt from "./PaymentWizard/StakeItt";
+import SignStaking from "./PaymentWizard/SignStaking";
+import StakingDone from "./PaymentWizard/StakingDone";
 import Sign from "./PaymentWizard/Sign";
 import Done from "./PaymentWizard/Done";
 import constant from "../constant";
 
 export default {
   name: "Subscription",
-  components: { qrcode, Header, SendEth, Sign, SendItt },
+  components: { qrcode, Header, SendEth, Sign, SendItt, StakeItt, SignStaking, StakingDone },
   data() {
     return {
       step: 0,
-      payload: undefined
+      stakingStep: 0,
+      payload: undefined,
+      stakingPayload: undefined
     };
   },
   methods: {
@@ -61,9 +66,17 @@ export default {
       var pages = [SendEth, Sign, Done];
       return pages[this.step];
     },
+    StakingCurrentPage: function() {
+      var pages = [StakeItt, SignStaking, StakingDone];
+      return pages[this.stakingStep];
+    },
     CurrentStepLabel: function() {
       var labels = ["Sign your transaction", "Verify", "Done!"];
       return labels[this.step];
+    },
+    CurrentStakingStepLabel: function() {
+      var labels = ["Setup your staking", "Verify", "Done!"];
+      return labels[this.stakingStep];
     }
   }
 };
@@ -152,5 +165,11 @@ export default {
 }
 .el-notification__content {
   font-size: 10px;
+}
+
+.el-textarea__inner {
+    min-height: 180px !important;
+    font-size: 10px;
+    line-height: 1.2;
 }
 </style>

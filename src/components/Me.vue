@@ -3,7 +3,7 @@
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
-import db from "../db";
+import api from "../api";
 
 export default {
   props: ["token"],
@@ -14,11 +14,11 @@ export default {
     this.$store.dispatch("saveChatId", token.telegram_chat_id).then(() => {
       console.log("Loading backend data...");
       Promise.all([
-        db.loadTransactionCurrencies(),
-        db.loadSignals(),
-        db.loadIttPrice(),
-        db.loadSubscriptionTemplates(),
-        db.loadEthPrice()
+        api.loadTransactionCurrencies(),
+        api.loadSignals(),
+        api.loadIttPrice(),
+        api.loadSubscriptionTemplates(),
+        api.loadEthPrice()
       ])
         .then(fulfillments => {
           this.$store.commit("all_transaction_currencies", fulfillments[0]);

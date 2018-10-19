@@ -5,6 +5,12 @@ const apiKey = process.env.NODE_SVC_API_KEY;
 
 const coreApiUrl = `https://${process.env.ITT_API_HOST}/v2`
 const coreApiKey = process.env.ITT_API_KEY
+const itfHeaders = new Headers({
+    "NSVC-API-KEY": apiKey,
+    "Content-Type": "application/json",
+    "Access-Control-Request-Headers": "*",
+    "Access-Control-Request-Method": "*"
+})
 
 const readableSettings = [
     { setting: "is_muted", readonly: false },
@@ -30,12 +36,7 @@ function save(chat_id, settings) {
 
     return fetch(`${serviceEndpoint}/users/${chat_id}`, {
         method: "PUT",
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
         mode: "cors",
         body: JSON.stringify(settings)
     });
@@ -44,12 +45,7 @@ function save(chat_id, settings) {
 function resetCoins(chat_id) {
     return fetch(`${serviceEndpoint}/users/${chat_id}/resetSignals`, {
         method: "PUT",
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
         mode: "cors"
     });
 }
@@ -57,12 +53,7 @@ function resetCoins(chat_id) {
 function loadTransactionCurrencies() {
     console.log(`Fetching ${serviceEndpoint}/tickers/transaction_currencies`);
     return fetch(`${serviceEndpoint}/tickers/transaction_currencies`, {
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
         mode: "cors"
     }).then(result => {
         return result.json().then(data => {
@@ -73,12 +64,16 @@ function loadTransactionCurrencies() {
 
 function loadUserSettings(chat_id) {
     return fetch(`${serviceEndpoint}/users/${chat_id}`, {
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
+        mode: "cors"
+    }).then(result => {
+        return result.json();
+    });
+}
+
+function loadUserStake(chat_id) {
+    return fetch(`${serviceEndpoint}/staking/forceRefresh/${chat_id}`, {
+        headers: itfHeaders,
         mode: "cors"
     }).then(result => {
         return result.json();
@@ -87,12 +82,7 @@ function loadUserSettings(chat_id) {
 
 function loadSubscriptionTemplates() {
     return fetch(`${serviceEndpoint}/subscription`, {
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
         mode: "cors"
     }).then(result => {
         return result.json();
@@ -101,12 +91,7 @@ function loadSubscriptionTemplates() {
 
 function loadSignals() {
     return fetch(`${serviceEndpoint}/signals`, {
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
         mode: "cors"
     }).then(result => {
         return result.json();
@@ -125,7 +110,7 @@ function loadIttPrice() {
     }).then(result => {
         console.log(result)
         return parseFloat(result.close).toFixed(3);
-    }).catch(err => { console.log(err); return null })
+    }).catch(err => { console.log('Something went wrong!'); return null })
 }
 
 
@@ -133,32 +118,43 @@ function loadEthPrice() {
 
     console.log('Fetching ETH price...')
     return fetch(`${serviceEndpoint}/tickers/transaction_currencies/ETH`, {
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+        headers: itfHeaders,
         mode: "cors"
     }).then(result => {
         return result.json();
     });
 }
 
-function verifySignature(signature) {
-    console.log('Fetching ETH price...')
-    return fetch(`${serviceEndpoint}/payment/verifyEthTransaction`, {
-        method:'POST',
-        headers: new Headers({
-            "NSVC-API-KEY": apiKey,
-            "Content-Type": "application/json",
-            "Access-Control-Request-Headers": "*",
-            "Access-Control-Request-Method": "*"
-        }),
+function verifyStakingSignature(signatureObj) {
+    return fetch(`${serviceEndpoint}/staking/verify`, {
+        method: 'POST',
+        headers: itfHeaders,
         mode: "cors",
-        body: signature
+        body: signatureObj
     }).then(result => {
         return result.json();
+    })
+}
+
+function verifyEthSignature(signatureObj) {
+    console.log('Verifying ETH signature...')
+    return fetch(`${serviceEndpoint}/payment/verifyEthTransaction`, {
+        method: 'POST',
+        headers: itfHeaders,
+        mode: "cors",
+        body: signatureObj
+    }).then(result => {
+        return result.json();
+    });
+}
+
+function setStakingAddress(telegram_chat_id, wallet) {
+    console.log('Setting staking address...')
+    return fetch(`${serviceEndpoint}/staking/wallet`, {
+        method: 'POST',
+        headers: itfHeaders,
+        mode: "cors",
+        body: JSON.stringify({ telegram_chat_id: telegram_chat_id, wallet: wallet })
     });
 }
 
@@ -192,5 +188,8 @@ export default {
     loadIttPrice: loadIttPrice,
     loadSubscriptionTemplates: loadSubscriptionTemplates,
     loadEthPrice: loadEthPrice,
-    verifySignature: verifySignature
+    verifyEthSignature: verifyEthSignature,
+    verifyStakingSignature: verifyStakingSignature,
+    loadUserStake: loadUserStake,
+    setStakingAddress: setStakingAddress
 }

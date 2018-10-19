@@ -12,7 +12,7 @@
             <el-row>
           </el-row>
           <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600'>{{txHashNo0x}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
+            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600' @click="doCopy">{{txHashNo0x}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
             </el-row>
             <el-row style='text-align:left; margin-top:10px'>
             <label style='font-size:10px;font-weight:200'>3. Paste the full signature result in the box below and press <b>Verify</b>.</label>
@@ -20,11 +20,13 @@
             <el-row>
                 <el-input type="textarea" :rows="8" :placeholder=exampleSignature v-model="signatureResult"></el-input>
             </el-row>
-            <el-button type="primary" class='stepButton' :disabled="signatureResult=='' || validating" @click="validateSignature">{{verificationText}} <i class="fas fa-long-arrow-alt-right"></i></el-button>
+            <el-row style="padding:20px">
+            <el-button type="primary" :disabled="signatureResult=='' || validating" @click="validateSignature">{{verificationText}} <i class="fas fa-long-arrow-alt-right"></i></el-button>
+            </el-row>
     </div>
 </template>
 <script>
-import db from "../../db";
+import api from "../../api";
 import { mapGetters } from "vuex";
 
 export default {
@@ -51,12 +53,22 @@ export default {
       return this.txHash.startsWith("0x") ? this.txHash.slice(2) : this.txHash;
     }
   },
-  methods: {
+  methods: {doCopy: function() {
+      this.$copyText(this.txHashNo0x).then(() => {
+        this.$notify({
+          title: "ITF Payment",
+          message: `${this.txHashNo0x} copied to clipboard`,
+          duration: 0,
+          offset: 100,
+          type: "success"
+        });
+      });
+    },
     validateSignature: function() {
       var signatureObject = JSON.parse(this.signatureResult);
       this.validating = true;
       this.verificationText = 'Verifying...'
-      db.verifySignature(
+      api.verifyEthSignature(
         JSON.stringify({
           ...signatureObject,
           telegram_chat_id: this.telegram_chat_id

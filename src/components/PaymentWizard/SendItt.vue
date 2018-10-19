@@ -10,7 +10,7 @@
             <div v-show="this.itt_usd_rate != null" style="margin-top: 20px;">
           <el-row class=flexrow>
               <div class=crownico>
-                  <i class="fas fa-crown"></i>
+                <i class="fas fa-chess-knight"></i>
               </div>
               <div class=pricing-col>
           <label class="plan-info">Starter</label>
@@ -34,7 +34,7 @@
           </button>
         </div>
         </el-row>
-        <el-row style='padding:20px'>
+        <el-row style='padding:30px'>
           <a href='https://intelligenttrading.org/guides/how-to-buy-itt-tokens/?utm_source=TelegramBotSettings' target="_blank" class='button'>How to get ITT</a>
         </el-row>
     </div>
@@ -106,7 +106,6 @@ a.button{
  background-color:lightblue;
  border-radius:5px;
  color:#fff;
- margin-right:10px;
  padding:10px 20% 10px 20%;
 }
 
