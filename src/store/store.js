@@ -57,7 +57,11 @@ export default new Vuex.Store({
         },
         stakingAddress(state, address) {
             return api.setStakingAddress(state.telegram_chat_id, address).then(code => {
+                // changing locally waiting for a full refresh of the UI to sync properly.
+                // not strongly needed since the backend is updated correctly at every set/reset of the wallet
                 state.settings.staking.walletAddress = address
+                state.settings.staking.veriSigned = false
+                state.settings.staking.lastRetrievedBalance = 0
             })
         }
     },
@@ -167,7 +171,7 @@ export default new Vuex.Store({
             return _.sum(state.settings.ittTransactions.map(tx => tx.total_in_itt))
         },
         stakingBalance: state => {
-            return state.settings.staking.lastRetrievedBalance
+            return state.settings.staking.veriSigned ? state.settings.staking.lastRetrievedBalance : 0
         },
         signalLabel: state => indicator => {
             var match = state.signals.find(s => s.label && s.label == indicator.name);
