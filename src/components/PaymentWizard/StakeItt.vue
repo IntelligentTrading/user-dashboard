@@ -31,7 +31,7 @@
         </el-row>
   </div>
           <br/>
-        <el-button type="primary" :disabled="!this.$store.state.settings.staking.walletAddress" @click="$emit('update:stakingStep', 1)">Sign to verify your address<i class="fas fa-long-arrow-alt-right"></i></el-button>
+        <el-button type="primary" :disabled="this.stakingAddress == '' || !this.stakingAddress || this.editMode" @click="$emit('update:stakingStep', 1)">Sign to verify your address<i class="fas fa-long-arrow-alt-right"></i></el-button>
     </div>
 </template>
 <script>
