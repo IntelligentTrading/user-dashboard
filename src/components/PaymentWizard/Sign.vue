@@ -12,7 +12,7 @@
             <el-row>
           </el-row>
           <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600' @click="doCopy">{{txHashNo0x}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
+            <label style='font-size:10px;font-weight:200'>2. Click on <span style='font-weight:600' @click="doCopy">{{txHashNo0x}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
             </el-row>
             <el-row style='text-align:left; margin-top:10px'>
             <label style='font-size:10px;font-weight:200'>3. Paste the full signature result in the box below and press <b>Verify</b>.</label>
