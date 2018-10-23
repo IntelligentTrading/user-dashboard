@@ -1,8 +1,5 @@
 <template>
     <div>
-        <el-row>
-            <label style='font-size:12px;font-weight:600'>Staking setup Result</label>
-        </el-row>
         <el-row style='text-align:center'>
             <i v-show="stakingResult.verified" class="fas fa-coins paymentok"></i>
             <i v-show="!stakingResult.verified" class="fas fa-frown paymentko"></i>
@@ -25,7 +22,7 @@ export default {
   data() {
     return {
       refreshing: false,
-      reloadText: "Home"
+      reloadText: "Finish"
     };
   },
   computed: {

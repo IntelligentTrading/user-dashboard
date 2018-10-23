@@ -4,96 +4,160 @@
             <Header title="Subscriptions" />
             </el-header> 
     <el-main>
-      <el-tabs>
-         <el-tab-pane>
-          <span slot="label">Pay with ETH <i class="fab fa-ethereum"></i></span>
-          <div>
-            <component :is=CurrentPage v-bind:step.sync=step :payload.sync=payload></component>
-            </div>
-        </el-tab-pane>
-        <el-tab-pane>
-            <span slot="label">Pay with ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
-            <send-itt></send-itt>
-        </el-tab-pane>
-        <el-tab-pane>
-            <span slot="label">Stake ITT <img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/></span>
-            <div>
-            <component :is=StakingCurrentPage v-bind:stakingStep.sync=stakingStep :stakingPayload.sync=stakingPayload></component>
-            </div>
-        </el-tab-pane>
-      </el-tabs>
+      <div style="display:inline-block">
+      <el-row>
+        <label class='title'>{{this.subscription.plan}}</label>
+      </el-row>
+      <el-row>
+        <label class='daysleft-title'>{{this.daysLeftLabel()}}</label>
+      </el-row>
+      <el-row>
+        <label class='daysleft-title'>. . .</label>
+      </el-row>
+      <el-row>
+        <label class='upgrade-label'>{{this.upgradeOrExtendLabel()}}</label>
+      </el-row>
+      <el-row style='margin-top:20px;font-weight:500'>
+        <label class='upgrade-label'>Select your payment method:</label>
+      </el-row>
+      <el-row>
+          <el-card :class="[{'selected': preferredPaymentMethod == 'SendEth'}, 'paymentMethodCard']" shadow=never border @click.native="preferredPaymentMethod = 'SendEth'">
+            <div style="padding: 2px;">
+              <span><i class="fab fa-ethereum"></i><label class=method> Pay with Ethereum</label></span>
+              <el-row>
+              <span style="font-size:12px">Use ETH to purchase 1, 3, 12 monts of access.
+              </span>
+              </el-row>
+                <el-row>
+                <span style='font-size:10px;display: flex'>* All ETH received will be used to purchase ITT on your behalf</span>
+                </el-row>
+        </div>
+          </el-card>
+      </el-row>
+      <el-row>
+        <el-card :class="[{'selected': preferredPaymentMethod == 'SendItt'}, 'paymentMethodCard']" shadow=never border @click.native="preferredPaymentMethod = 'SendItt'">
+            <div style="padding: 2px;">
+              <span><img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/><label class=method> Pay with ITT</label></span>
+              <div class='bottom clearfix'>
+              <span style="font-size:12px">Use ITT to purchase 1, 3, 12 monts of access.
+              </span>
+              </div>
+        </div>
+          </el-card>
+      </el-row>
+      <el-row>
+        <el-card :class="[{'selected': this.preferredPaymentMethod == 'StakeItt'}, 'paymentMethodCard']" shadow=never border @click.native="preferredPaymentMethod = 'StakeItt'">
+            <div style="padding: 2px;">
+              <span><i class="fas fa-coins"></i><label class='method'> Stake ITT</label></span>
+              <div class='bottom clearfix'>
+              <span style="font-size:12px">Get access by holding 10,000 ITT in your wallet</span>
+              </div>
+        </div>
+          </el-card>
+      </el-row>
+      <el-button class=next type="primary" @click="startPayment()">Next <i class="fas fa-long-arrow-alt-right"></i></el-button>
+      </div>
     </el-main>
 </el-container>
 </template>
 <script>
-import qrcode from "vue-qrcode-component";
 import Header from "./Header";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-import SendEth from "./PaymentWizard/SendEth";
-import SendItt from "./PaymentWizard/SendItt";
-import StakeItt from "./PaymentWizard/StakeItt";
-import SignStaking from "./PaymentWizard/SignStaking";
-import StakingDone from "./PaymentWizard/StakingDone";
-import Sign from "./PaymentWizard/Sign";
-import Done from "./PaymentWizard/Done";
 import constant from "../constant";
 
 export default {
   name: "Subscription",
-  components: { qrcode, Header, SendEth, Sign, SendItt, StakeItt, SignStaking, StakingDone },
+  components: {
+    Header
+  },
   data() {
     return {
-      step: 0,
-      stakingStep: 0,
-      payload: undefined,
-      stakingPayload: undefined
+      preferredPaymentMethod: "SendItt"
     };
   },
   methods: {
-    onCopy: function(e) {
-      alert(`ITF wallet\n${e.text}\n\nAddress copied`);
-    },
-    onError: function(e) {
-      alert("Failed to copy text");
+    highlight: src => {
+      this.preferredPaymentMethod = src;
+      console.log(this.preferredPaymentMethod);
     },
     goBack: function() {
       this.$router.go(-1);
+    },
+    daysLeftLabel: function() {
+      if (this.settings.staking.diecimila) return `Staking active.`;
+
+      return this.subscription.daysLeft > 0 || this.subscription.daysLeft == "∞"
+        ? this.subscription.daysLeft + " days left"
+        : this.subscription.hoursLeft + " hours left";
+    },
+    upgradeOrExtendLabel: function() {
+      if (this.subscription.plan == "Pro")
+        return "Extend your subscription to the Pro Plan to keep receiving premium trading signals [View all features]";
+      else
+        return "Upgrade to Pro for just 20$ to get premium trding signals and unlock alerts from coins listed on Bonance [View all features]";
+    },
+    startPayment: function() {
+      this.$router.push("/Payment/" + this.preferredPaymentMethod);
     }
   },
   computed: {
-    ...mapGetters(["subscription"]),
-    CurrentPage: function() {
-      var pages = [SendEth, Sign, Done];
-      return pages[this.step];
-    },
-    StakingCurrentPage: function() {
-      var pages = [StakeItt, SignStaking, StakingDone];
-      return pages[this.stakingStep];
-    },
-    CurrentStepLabel: function() {
-      var labels = ["Sign your transaction", "Verify", "Done!"];
-      return labels[this.step];
-    },
-    CurrentStakingStepLabel: function() {
-      var labels = ["Setup your staking", "Verify", "Done!"];
-      return labels[this.stakingStep];
-    }
+    ...mapGetters([
+      "settings",
+      "dbTransactionCurrencies",
+      "subscription",
+      "highestSubscriptionLevel",
+      "signalLabel",
+      "telegram_chat_id"
+    ])
   }
 };
 </script>
 <style>
+.next {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.paymentMethodCard {
+  width: 100%;
+  text-align: left;
+  margin-top: 10px;
+  opacity: 0.7;
+}
+
+.method {
+  font-weight: 500;
+}
+
+.block {
+  display: flex;
+  text-align: left;
+  padding: 20px;
+}
+
+.upgrade-label {
+  font-size: 12px;
+  margin-top: 15px;
+}
+
 .qr-info {
   color: #2a4d96;
   font-weight: bold;
   font-size: 16px;
 }
 
-.pricing-info {
-  font-size: 32px;
-  border-radius: 5px;
-  padding: 5px;
-  font-weight: 400;
-  margin: 5px;
+.selected {
+  background: #66b1ff38;
+  border: #3a8ee6 1px solid;
+  opacity: 1;
+}
+
+.title {
+  font-size: 24px;
+}
+
+.daysleft-title {
+  font-size: 14px;
 }
 
 .pricing-subtitle {
@@ -168,8 +232,8 @@ export default {
 }
 
 .el-textarea__inner {
-    min-height: 180px !important;
-    font-size: 10px;
-    line-height: 1.2;
+  min-height: 180px !important;
+  font-size: 10px;
+  line-height: 1.2;
 }
 </style>

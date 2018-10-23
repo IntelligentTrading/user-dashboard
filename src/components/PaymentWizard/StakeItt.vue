@@ -1,14 +1,9 @@
 <template>
     <div>
-        <el-row>
-            <label style='font-size:12px;font-weight:600'>Stake ITT</label>
+      <el-row style='padding:20px'>
+          <label class="plan-info">Get access to the Pro Plan by holding a balance of 10,000 ITT. All tokens paid as subscriptions get counted towards your staked balance.</label>
         </el-row>
-        <el-row>
-            <label @click="editAddress" v-show=!editMode style='font-size:10px;font-weight:200'>{{this.stakingAddress ? `Staking on ${this.stakingAddress}` : 'No staking address set.'}} <i class="el-icon-edit"></i></label>
-            <el-input v-show=editMode placeholder="0x1fD19a3FB5Ec2D73440B908c8038333aeFAd1e3e4e" v-model="stakingAddress" size="mini"><el-button slot="append" :disabled="this.stakingAddress == ''" icon="el-icon-check" @click="setStakingWallet"></el-button></el-input>
-        </el-row>
-          <br/>
-          <div class="block">
+        <div class="block">
         <el-row class=flexrow  style="margin-top:10px;">
               <div class=crownico >
                   <i class="fas fa-chess-rook"></i>
@@ -23,13 +18,14 @@
               </div>
         </el-row>
         <el-row style='padding:20px'>
-                <i class="fas fa-coins"></i> {{this.stakingBalance}} +
-                <i class="fas fa-wallet"></i> {{this.paidTokens.toFixed(2)}}
-        </el-row>
-        <el-row style='padding:20px'>
-          <el-alert title="" type="info" description="A total amount of 10K ITT tokens paid for subscriptions will give you lifetime Pro access without the need of staking your tokens." show-icon :closable=false></el-alert>
+                <i class="fas fa-coins"></i> {{this.stakingBalance}} from staking.<br />
+                <i class="fas fa-wallet"></i> {{this.paidTokens.toFixed(2)}} from payments.
         </el-row>
   </div>
+  <el-row>
+            <label @click="editAddress" v-show=!editMode style='font-size:10px;font-weight:200; color:blue'>{{this.stakingAddress ? `Staking on ${this.stakingAddress}` : 'Add your wallet address.'}} <i class="el-icon-edit"></i></label>
+            <el-input v-show=editMode placeholder="0x1fD19a3FB5Ec2D73440B908c8038333aeFAd1e3e4e" v-model="stakingAddress" size="mini"><el-button slot="append" :disabled="this.stakingAddress == ''" icon="el-icon-check" @click="setStakingWallet"></el-button></el-input>
+        </el-row>
           <br/>
         <el-button type="primary" :disabled="this.stakingAddress == '' || !this.stakingAddress || this.editMode" @click="$emit('update:stakingStep', 1)">Sign to verify your address<i class="fas fa-long-arrow-alt-right"></i></el-button>
     </div>
