@@ -15,7 +15,7 @@
         <label class='daysleft-title'>. . .</label>
       </el-row>
       <el-row>
-        <label class='upgrade-label'>{{this.upgradeOrExtendLabel()}}</label>
+        <label class='upgrade-label'>{{this.upgradeOrExtendLabel()}} <a href='https://intelligenttrading.org/pricing/' target='_blank'>[View all features]</a></label>
       </el-row>
       <el-row style='margin-top:20px;font-weight:500'>
         <label class='upgrade-label'>Select your payment method:</label>
@@ -25,11 +25,11 @@
             <div style="padding: 2px;">
               <span><i class="fab fa-ethereum"></i><label class=method> Pay with Ethereum</label></span>
               <el-row>
-              <span style="font-size:12px">Use ETH to purchase 1, 3, 12 monts of access.
+              <span style="font-size:12px">Use ETH to purchase 1, 3, 12 months of access.
               </span>
               </el-row>
                 <el-row>
-                <span style='font-size:10px;display: flex'>* All ETH received will be used to purchase ITT on your behalf</span>
+                <span style='font-size:10px;display: flex'>* All ETH received will be used to purchase ITT on your behalf.</span>
                 </el-row>
         </div>
           </el-card>
@@ -39,7 +39,7 @@
             <div style="padding: 2px;">
               <span><img src='https://intelligenttrading.org/wp-content/themes/intelligent-trading/assets/img/icons/favicon-16x16.png' style="width:14px;height:14px"/><label class=method> Pay with ITT</label></span>
               <div class='bottom clearfix'>
-              <span style="font-size:12px">Use ITT to purchase 1, 3, 12 monts of access.
+              <span style="font-size:12px">Use ITT to purchase 1, 3, 12 months of access.
               </span>
               </div>
         </div>
@@ -50,7 +50,7 @@
             <div style="padding: 2px;">
               <span><i class="fas fa-coins"></i><label class='method'> Stake ITT</label></span>
               <div class='bottom clearfix'>
-              <span style="font-size:12px">Get access by holding 10,000 ITT in your wallet</span>
+              <span style="font-size:12px">Get access by holding 10,000 ITT in your wallet.</span>
               </div>
         </div>
           </el-card>
@@ -92,9 +92,9 @@ export default {
     },
     upgradeOrExtendLabel: function() {
       if (this.subscription.plan == "Pro")
-        return "Extend your subscription to the Pro Plan to keep receiving premium trading signals [View all features]";
+        return "Extend your subscription to the Pro Plan to keep receiving premium trading signals.";
       else
-        return "Upgrade to Pro for just 20$ to get premium trding signals and unlock alerts from coins listed on Bonance [View all features]";
+        return "Upgrade to Pro for just $20 to get premium trading signals and unlock alerts from coins listed on Binance.";
     },
     startPayment: function() {
       this.$router.push("/Payment/" + this.preferredPaymentMethod);
