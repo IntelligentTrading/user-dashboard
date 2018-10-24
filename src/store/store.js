@@ -145,11 +145,10 @@ export default new Vuex.Store({
                 return { plan: 'Loading...', daysLeft: '0' }
 
             if (state.settings.is_ITT_team)
-                return { plan: "Advanced (ITF Team)", daysLeft: '∞' }
+                return { plan: "Pro (ITF Team)", daysLeft: '∞' }
 
-            if (state.settings.staking) {
-                if (state.settings.staking.centomila) return { plan: "Advanced", daysLeft: '∞' }
-                if (state.settings.staking.diecimila) return { plan: "Pro", daysLeft: '∞' }
+            if (state.settings.staking && state.settings.staking.diecimila) {
+                return { plan: "Pro", daysLeft: '∞' }
             }
 
             if (state.settings.subscriptions) {
@@ -163,8 +162,8 @@ export default new Vuex.Store({
                     Math.max(-1 * moment().diff(state.settings.subscriptions.beta, "days"), 0);
 
                 return paidHoursLeft > 0
-                    ? { plan: "Starter", daysLeft: paidDaysLeft, hoursLeft: paidHoursLeft }
-                    : betaHoursLeft > 0 ? { plan: "FREE+", daysLeft: betaDaysLeft, hoursLeft: betaHoursLeft } : { plan: "FREE", daysLeft: '∞' };
+                    ? { plan: "Pro", daysLeft: paidDaysLeft, hoursLeft: paidHoursLeft }
+                    : { plan: "FREE", daysLeft: betaDaysLeft, hoursLeft: '∞' };
             }
         },
         paidTokens: state => {

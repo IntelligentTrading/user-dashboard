@@ -98,7 +98,7 @@ export default {
       "subscription",
       "highestSubscriptionLevel",
       "signalLabel",
-      "telegram_chat_id"
+      "telegram_chat_id",
     ]),
     subscriptionDescription: function() {
       if (this.settings.staking.diecimila)

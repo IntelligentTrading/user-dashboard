@@ -1,28 +1,36 @@
 <template>
     <div>
         <el-row>
-            <label style='font-size:12px;font-weight:600'>Send Ethereum</label>
-        </el-row>
+            <label style='font-size:18px;font-weight:600'>Pay with Ethereum</label>
+            </el-row>
         <el-row>
-            <label style='font-size:10px;font-weight:200'>Tap to copy this address or scan the QR code</label>
-        </el-row>
-        <el-row>
-            <div v-show="this.eth_usd_rate != null" style="margin-top: 20px;">
-          <el-row class=flexrow  style="margin-top:10px;">
-              <div class=crownico >
-                  <i class="fas fa-chess-knight"></i>
-              </div>
-              <div class="pricing-col">
-          <label class="plan-info">Starter</label>
-          <br/>
-          <label class="pricing-info">{{requiredTokens}} ETH/mo</label>
-          <br/>
           <label class="pricing-subtitle">
-            1 ETH = ${{Math.round(parseFloat(this.eth_usd_rate))}} USDT = {{(1/requiredTokens).toFixed(1)}} months
+            1 ETH = ${{Math.round(parseFloat(this.eth_usd_rate))}} USDT
           </label>
-              </div>
         </el-row>
-        </div>
+        <el-row style=margin-top:20px><label style="font-size:12px">Get access to the Pro Plan for </label></el-row>
+        <el-row style="padding:10px">
+          <el-col :span=8>
+        <el-card :class="[{'selected': preferredDuration == '1M'}, 'subscriptionDuration']" shadow=never border @click.native="preferredDuration = '1M'">
+              <span style="font-size:12px">1 Month
+              </span>
+          </el-card>
+          </el-col>
+          <el-col :span=8>
+          <el-card :class="[{'selected': preferredDuration == '3M'}, 'subscriptionDuration']" shadow=never border @click.native="preferredDuration = '3M'">
+              <span style="font-size:12px">3 Months
+              </span>
+          </el-card>
+          </el-col>
+        <el-col :span=8>
+          <el-card :class="[{'selected': preferredDuration == '12M'}, 'subscriptionDuration']" shadow=never border @click.native="preferredDuration = '12M'">
+              <span style="font-size:12px">12 Months
+              </span>
+          </el-card>
+          </el-col>
+        </el-row>  
+        <el-row>
+            <label style='font-size:12px;font-weight:200'>Send <b>{{subscriptionAmount}} ETH</b> to the following address.<br /> (Tap or scan the QR code below to copy the receiver address)</label>
         </el-row>
         <el-row>
         <qrcode class='qrcode' :text="ethAddress" @click.native='doCopy'></qrcode>
@@ -34,8 +42,8 @@
           </button>
         </div>
         </el-row>
-        <el-row style="padding:20px">
-        <el-button type="primary" @click="$emit('update:step', 1)">Sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
+        <el-row style='padding:30px'>
+          <el-button type="primary" @click="$emit('update:step', 1)">Sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
         </el-row>
     </div>
 </template>
@@ -50,7 +58,8 @@ export default {
     return {
       eth_usd_rate: this.$store.state.eth_usd_rate,
       months: 1,
-      label: "ETH"
+      label: "ETH",
+        preferredDuration:'3M'
     };
   },
   computed: {
@@ -67,6 +76,9 @@ export default {
     },
     getLabel: function() {
       return "ETH";
+    },
+    subscriptionAmount: function() {
+      return (parseInt(this.preferredDuration.replace('M','')) * this.requiredTokens).toFixed(3)
     }
   },
   methods: {
@@ -84,7 +96,12 @@ export default {
   }
 };
 </script>
+
 <style>
+.el-card__body {
+  padding: 10px;
+}
+
 .plan-info {
   font-size: 16px;
 }
@@ -99,6 +116,16 @@ export default {
   padding: 0px;
   margin: 0px;
 }
+a {
+  text-decoration: none;
+}
+
+a.button {
+  background-color: lightblue;
+  border-radius: 5px;
+  color: #fff;
+  padding: 10px 20% 10px 20%;
+}
 
 .flexrow {
   margin-top: 10px;
@@ -107,11 +134,8 @@ export default {
   justify-content: center;
 }
 
-.crownico {
-  text-align: right;
-  padding: 10px;
-  font-size: 32px;
-  max-width: 50%;
+.subscriptionDuration {
+  margin: 2px;
+  opacity: 0.7;
 }
-
 </style>
