@@ -11,10 +11,7 @@
       <el-row>
         <label class='daysleft-title'>{{this.daysLeftLabel()}}</label>
       </el-row>
-      <el-row>
-        <label class='daysleft-title'>. . .</label>
-      </el-row>
-      <el-row>
+      <el-row style='padding:20px'>
         <label class='upgrade-label'>{{this.upgradeOrExtendLabel()}} <a href='https://intelligenttrading.org/pricing/' target='_blank'>[View all features]</a></label>
       </el-row>
       <el-row style='margin-top:20px;font-weight:500'>

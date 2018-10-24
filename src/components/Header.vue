@@ -37,7 +37,7 @@ export default {
 </script>
 <style>
 .el-message-box{
-  width: 70%
+  width: 300px !important
 }
 </style>
 

@@ -1,13 +1,13 @@
 <template>
     <div>
         <el-row>
-            <label style='font-size:12px;font-weight:600'>Sign a message with your address</label>
+            <label style='font-size:18px;font-weight:600'>Sign a message with your address</label>
         </el-row>
             <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>1. Click on <span style='font-weight:600' @click="doCopy">{{codeToSign}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank">MyCrypto</a> selecting the address you used to pay. (Detailed guide)</label>
+            <label style='font-size:12px;font-weight:200'>1. Click on <span style='font-weight:600' @click="doCopy">{{codeToSign}}</span> to copy to your clipboard and use it as message to sign on <a href="https://mycrypto.com/sign-and-verify-message/sign" target="_blank">MyCrypto</a> selecting the address you used to pay.  <a href='https://intelligenttrading.org/guides/how-to-buy-itt-tokens/' target='_blank'>(Detailed guide)</a></label>
             </el-row>
-            <el-row style='text-align:left; margin-top:10px'>
-            <label style='font-size:10px;font-weight:200'>2. Paste the full signature result in the box below and press <b>Verify</b>.</label>
+            <el-row style='text-align:left; margin-top:10px;margin-bottom:10px'>
+            <label style='font-size:12px;font-weight:200'>2. Paste the full signature result in the box below and press <b>Verify your signature</b>.</label>
             </el-row>
             <el-row>
                 <el-input type="textarea" :rows="8" :placeholder=exampleSignature v-model="signatureResult"></el-input>
@@ -57,7 +57,7 @@ export default {
         this.$notify({
           title: "ITF Payment",
           message: `${this.codeToSign} copied to clipboard`,
-          duration: 0,
+          duration: 2000,
           offset: 100,
           type: "success"
         });

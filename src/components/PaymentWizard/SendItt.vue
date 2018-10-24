@@ -37,7 +37,7 @@
         </el-row>
         <el-row>
         <div class="container">
-          <button type="button" class="addressLabel" v-clipboard:copy="address">
+          <button type="button" class="addressLabel" @click='doCopy'>
             {{address}} <i class="far fa-copy" style="color:#4ccfa6"></i>
           </button>
         </div>
@@ -85,7 +85,7 @@ export default {
         this.$notify({
           title: "ITF Payment",
           message: `${this.address} copied to clipboard`,
-          duration: 0,
+          duration: 2000,
           offset: 100,
           type: "success"
         })
