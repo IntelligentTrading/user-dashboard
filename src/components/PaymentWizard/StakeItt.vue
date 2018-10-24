@@ -11,7 +11,7 @@
           <label style='font-size:12px'>Note: all tokens paid as subscriptions get counted towards your staked balance.</label>
       </el-row>
       <el-row style="padding:20px;">
-        <stake-progress :progress='(this.stakingTokensPercentage)' :currentNumber='(this.stakingBalance + this.paidTokens).toFixed(2)' targetNumber='10K' :neededNumber=tokenNeeded></stake-progress>
+        <stake-progress :progress='(this.stakingTokensPercentage)' :currentNumber='(this.stakingBalance + this.paidTokens).toFixed(2)' targetNumber='10,000' :neededNumber=tokenNeeded></stake-progress>
       </el-row>
       <el-row style="padding:20px;border-radius: 25px;background: rgba(102, 177, 255, 0.12);">
         <el-col :span=11><i class="fas fa-coins"></i> {{this.stakingBalance}} ITT<br/> <span style='font-size:10px'>staking</span></el-col>
