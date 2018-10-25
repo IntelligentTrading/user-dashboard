@@ -30,7 +30,7 @@
           </el-col>
         </el-row>  
         <el-row>
-            <label style='font-size:12px;font-weight:200'>Send <b>{{subscriptionAmount}} ITT</b> to the following address.<br /> (Tap or scan the QR code below to copy the receiver address)</label>
+            <label style='font-size:12px;font-weight:200'>Send <b>{{subscriptionAmount}} ITT</b><span style='color:lightslategray'> (${{(subscriptionAmount * this.itt_usd_rate).toFixed(2)}})</span> to the following address.<br /> (Tap or scan the QR code below to copy the receiver address)</label>
         </el-row>
         <el-row>
         <qrcode class='qrcode' :text="address" @click.native='doCopy'></qrcode>
