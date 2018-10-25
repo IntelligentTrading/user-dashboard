@@ -82,14 +82,12 @@ export default new Vuex.Store({
 
             var levels = {}
             levels.is_ITT_team = state.settings.is_ITT_team
-            levels.isAdvanced = state.settings.staking && state.settings.staking.centomila
             levels.isPro = state.settings.staking && state.settings.staking.diecimila
             levels.isStarter = -1 * moment().diff(state.settings.subscriptions.paid, "hours") > 0
             levels.isFreePlus = -1 * moment().diff(state.settings.subscriptions.beta, "hours") > 0
 
             var highestLevel = 'free'
             if (levels.is_ITT_team) highestLevel = 'ITT'
-            else if (levels.isAdvanced) highestLevel = 'centomila'
             else if (levels.isPro) highestLevel = 'diecimila'
             else if (levels.isStarter) highestLevel = 'paid'
             else if (levels.isFreePlus) highestLevel = 'beta'
@@ -117,7 +115,7 @@ export default new Vuex.Store({
         },
         exchanges(state, getters) {
 
-            var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
+            var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "diecimila" : getters.highestSubscriptionLevel;
             var tooLowToEdit =
                 highestSubscriptionLevelTemp == "free" || highestSubscriptionLevelTemp == "beta";
 
@@ -180,7 +178,7 @@ export default new Vuex.Store({
 
             return api.COUNTER_CURRENCIES.filter(counter => counter.available).map(counter => {
 
-                var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
+                var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "diecimila" : getters.highestSubscriptionLevel;
                 var tooLowToEdit = highestSubscriptionLevelTemp == "free";
 
                 var subscriptionTemplate = state.subscriptionTemplates.filter(
@@ -202,7 +200,7 @@ export default new Vuex.Store({
         },
         availableTransactionCurrencies: (state, getters) => {
 
-            var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "centomila" : getters.highestSubscriptionLevel;
+            var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "diecimila" : getters.highestSubscriptionLevel;
             var enabledCounterCurrencies = getters.availableCounterCurrencies.filter(acc => acc.value)
             if (!enabledCounterCurrencies || enabledCounterCurrencies.length <= 0)
                 return [];

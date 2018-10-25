@@ -82,7 +82,7 @@ export default {
     },
     subscriptionTemplate: function() {
       var planFilter =
-        this.subscriptionPlan == "ITT" ? "Advanced" : this.subscriptionPlan;
+        this.subscriptionPlan == "ITT" ? "Pro" : this.subscriptionPlan;
       return this.subscriptionTemplates.filter(
         st => st.label == planFilter.toLowerCase()
       )[0];
