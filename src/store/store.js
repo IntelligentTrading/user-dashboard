@@ -161,7 +161,7 @@ export default new Vuex.Store({
 
                 return paidHoursLeft > 0
                     ? { plan: "Pro", daysLeft: paidDaysLeft, hoursLeft: paidHoursLeft }
-                    : { plan: "FREE", daysLeft: betaDaysLeft, hoursLeft: '∞' };
+                    : { plan: "FREE", daysLeft: DaysLeft, hoursLeft: '∞' };
             }
         },
         paidTokens: state => {
