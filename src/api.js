@@ -165,7 +165,7 @@ export default {
         {
             symbol: "BTC",
             index: 0,
-            enabled: false,
+            enabled: true,
             available: true
         },
         {

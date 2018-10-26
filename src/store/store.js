@@ -161,7 +161,7 @@ export default new Vuex.Store({
 
                 return paidHoursLeft > 0
                     ? { plan: "Pro", daysLeft: paidDaysLeft, hoursLeft: paidHoursLeft }
-                    : { plan: "FREE", daysLeft: DaysLeft, hoursLeft: '∞' };
+                    : { plan: "FREE", daysLeft: '∞', hoursLeft: '∞' };
             }
         },
         paidTokens: state => {
@@ -177,23 +177,9 @@ export default new Vuex.Store({
         availableCounterCurrencies: (state, getters) => {
 
             return api.COUNTER_CURRENCIES.filter(counter => counter.available).map(counter => {
-
-                var highestSubscriptionLevelTemp = getters.highestSubscriptionLevel == "ITT" ? "diecimila" : getters.highestSubscriptionLevel;
-                var tooLowToEdit = highestSubscriptionLevelTemp == "free";
-
-                var subscriptionTemplate = state.subscriptionTemplates.filter(
-                    st => st.label == highestSubscriptionLevelTemp
-                )[0];
-
-                var availableForPlan =
-                    !subscriptionTemplate.counter ||
-                    subscriptionTemplate.counter.includes(counter.index);
-
                 counter.canSee = true;
-                counter.canEdit = !tooLowToEdit;
-                counter.value = tooLowToEdit
-                    ? availableForPlan
-                    : state.settings.counter_currencies.includes(counter.index);
+                counter.canEdit = true;
+                counter.value = state.settings.counter_currencies.includes(counter.index);
 
                 return counter;
             });
@@ -207,7 +193,7 @@ export default new Vuex.Store({
 
             var atcs = getters.dbTransactionCurrencies.map(ticker => {
                 var tooLowToEdit =
-                    highestSubscriptionLevelTemp == "free" || (highestSubscriptionLevelTemp == "beta" && !ticker.sources.includes("poloniex"));
+                    (highestSubscriptionLevelTemp == "free" || highestSubscriptionLevelTemp == "beta") && _.difference(ticker.sources, ["binance"]).length == 0
 
                 var subscriptionTemplate = getters.subscriptionTemplates.filter(st => st.label == highestSubscriptionLevelTemp)[0]
                 var availableForPlan = !subscriptionTemplate.tickers || subscriptionTemplate.tickers.includes(ticker.symbol)
@@ -236,8 +222,7 @@ export default new Vuex.Store({
                 return response.json().then(updatedUser => {
                     context.commit("settings", updatedUser.settings)
                 }).catch(err => {
-                    alert('Error saving settings...')
-                    console.log(err)
+                    console.error(err)
                 })
             })
         },
