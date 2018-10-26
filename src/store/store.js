@@ -107,8 +107,8 @@ export default new Vuex.Store({
                     signal.deliverTo.indexOf(highestSubscriptionLevelTemp.toLowerCase()) >= 0 || highestSubscriptionLevelTemp == 'ITT';
 
                 indicator.canSee = true;
-                indicator.canEdit = !tooLowToEdit;
-                indicator.value = tooLowToEdit ? availableForPlan : indicator.enabled;
+                indicator.canEdit = availableForPlan;
+                indicator.value = availableForPlan && indicator.enabled;
 
                 return indicator;
             })
@@ -130,10 +130,8 @@ export default new Vuex.Store({
                     subscriptionTemplate.exchanges.includes(exchange.label.toLowerCase());
 
                 exchange.canSee = true;
-                exchange.canEdit = !tooLowToEdit;
-                exchange.value = tooLowToEdit
-                    ? availableForPlan
-                    : exchange.enabled;
+                exchange.canEdit = availableForPlan;
+                exchange.value = availableForPlan && exchange.enabled;
 
                 return exchange
             })
@@ -152,12 +150,8 @@ export default new Vuex.Store({
             if (state.settings.subscriptions) {
                 var paidHoursLeft =
                     Math.max(-1 * moment().diff(state.settings.subscriptions.paid, "hours"), 0);
-                var betaHoursLeft =
-                    Math.max(-1 * moment().diff(state.settings.subscriptions.beta, "hours"), 0);
                 var paidDaysLeft =
                     Math.max(-1 * moment().diff(state.settings.subscriptions.paid, "days"), 0);
-                var betaDaysLeft =
-                    Math.max(-1 * moment().diff(state.settings.subscriptions.beta, "days"), 0);
 
                 return paidHoursLeft > 0
                     ? { plan: "Pro", daysLeft: paidDaysLeft, hoursLeft: paidHoursLeft }
