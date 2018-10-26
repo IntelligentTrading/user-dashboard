@@ -32,7 +32,7 @@
             <settings-button v-show="false" actionTitle="Configure" subtitle="Quick Configuration" v-bind:currentOptionValue="'Wizard, presets and reset'" to="/Wizard" icon="fas fa-sliders-h icons"></settings-button>
             <settings-button actionTitle="Edit" subtitle="Currencies Watchlist" v-bind:currentOptionValue="watchlistText" icon="fas fa-eye icons" to="/Coins"></settings-button>
             <div class="settings-label">Alert Validity</div>
-            <el-radio-group v-model="userHorizon" size="default" :disabled=this.showFreeSettings>
+            <el-radio-group v-model="userHorizon" size="default">
                     <el-radio-button label="short">1 hour</el-radio-button >
                     <el-radio-button label="medium">4 hours</el-radio-button>
                     <el-radio-button label="long">24 hours</el-radio-button>
@@ -98,7 +98,7 @@ export default {
       "subscription",
       "highestSubscriptionLevel",
       "signalLabel",
-      "telegram_chat_id",
+      "telegram_chat_id"
     ]),
     subscriptionDescription: function() {
       if (this.settings.staking.diecimila)
@@ -133,9 +133,7 @@ export default {
     },
     watchlistText: function() {
       if (this.settings) {
-        var followed = this.showFreeSettings
-          ? { coins: 5, exchanges: 1 }
-          : {
+        var followed = {
               coins: this.selectedTransactionCurrencies.length,
               exchanges: this.settings.exchanges.filter(ex => ex.enabled).length
             };
@@ -153,14 +151,14 @@ export default {
       set: function(crowdNewValue) {}
     },
     showFreeSettings: function() {
-      return this.highestSubscriptionLevel == "free";
+      return this.highestSubscriptionLevel == "free" || this.highestSubscriptionLevel == "beta";
     },
     subscriptionTitle: function() {
       return this.showFreeSettings ? "Upgrade" : "View";
     },
     userHorizon: {
       get: function() {
-        return this.showFreeSettings ? "short" : this.settings.horizon;
+        return this.settings.horizon;
       },
       set: function(value) {
         this.settings.horizon = value;

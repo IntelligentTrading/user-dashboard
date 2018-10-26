@@ -19,7 +19,7 @@
             </el-row>
             <hr style="opacity:0.2;" />
           <el-row class="search-row">
-            <el-input :disabled="disableSearch" size=medium v-model.lazy="search" prefix-icon="el-icon-search" placeholder="Search Ticker" />
+            <el-input size=medium v-model.lazy="search" prefix-icon="el-icon-search" placeholder="Search Ticker" />
           </el-row>
           <el-row>
             <div class="coin-table">
@@ -91,8 +91,8 @@ export default {
           t => t != ticker.symbol
         );
 
-      ticker.value = !ticker.value
-      
+      ticker.value = !ticker.value;
+
       this.$nextTick().then(() => {
         this.$store.dispatch("save", {
           chat_id: this.$store.state.telegram_chat_id,
