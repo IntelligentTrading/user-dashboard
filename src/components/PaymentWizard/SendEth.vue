@@ -30,7 +30,7 @@
           </el-col>
         </el-row>  
         <el-row>
-            <label style='font-size:12px;font-weight:200'>Send <b>{{subscriptionAmount}} ETH</b><span style='color:lightslategray'> (${{(subscriptionAmount * parseFloat(this.eth_usd_rate)).toFixed(2)}})</span> to the following address.<br /> (Tap or scan the QR code below to copy the receiver address)</label>
+            <label style='font-size:12px;font-weight:200'>Send <b>{{subscriptionAmount}} ETH</b><span style='color:lightslategray'> (${{Math.round(subscriptionAmount * parseFloat(this.eth_usd_rate))}})</span> to the following address.<br /> (Tap or scan the QR code below to copy the receiver address)</label>
         </el-row>
         <el-row>
         <qrcode class='qrcode' :text="ethAddress" @click.native='doCopy'></qrcode>
