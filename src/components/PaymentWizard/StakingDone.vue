@@ -1,12 +1,15 @@
 <template>
     <div>
         <el-row style='text-align:center'>
-            <i v-show="stakingResult.verified" class="fas fa-coins paymentok"></i>
+            <i v-show="stakingResult.verified" class="fas fa-check paymentok"></i>
             <i v-show="!stakingResult.verified" class="fas fa-frown paymentko"></i>
          </el-row>
-         <el-row style='text-align:center;word-break: break-all;font-size: medium;'>
-             <el-alert :description="stakingResult.verified?'Your staking address is setup correctly!': 'Something went wrong. Double check your address and be sure the signature is correct.'" :type="stakingResult.verified?'success':'error'" :title="stakingResult.verified?'Success!':'Unsuccessful'" show-icon :closable="false"></el-alert>
+         <el-row style='text-align:center;margin:10px'>
+            <label style='font-weight:600'>{{stakingResult.verified?'Your staking address is verified!':'Something went wrong. Double check your address and be sure the signature is correct.'}}</label>
          </el-row>
+         <!--<el-row v-show="transaction.success" style='text-align:center'>
+            <label>{{transaction.value/Math.pow(10,18)}} ETH converted to superpowers!</label>
+         </el-row>-->
          <el-row style="padding:20px">
          <el-button type="primary" :disabled=this.refreshing @click="goHome">{{reloadText}}</el-button>
          </el-row>

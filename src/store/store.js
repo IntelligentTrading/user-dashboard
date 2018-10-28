@@ -126,7 +126,7 @@ export default new Vuex.Store({
             return state.settings.exchanges.map(exchange => {
 
                 var availableForPlan =
-                    !subscriptionTemplate.exchanges ||
+                    !subscriptionTemplate.exchanges || subscriptionTemplate.exchanges.length == 0 ||
                     subscriptionTemplate.exchanges.includes(exchange.label.toLowerCase());
 
                 exchange.canSee = true;

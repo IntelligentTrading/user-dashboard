@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-row style='text-align:center'>
-            <img width="50%" style="margin-top:50px" :src=alienbaby v-show="transaction.success"/>
+            <i v-show="transaction.success" class="fas fa-check paymentok"></i>
             <i v-show="!transaction.success" class="fas fa-frown paymentko"></i>
          </el-row>
          <el-row style='text-align:center;margin:10px'>
