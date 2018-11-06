@@ -19,6 +19,12 @@ router.beforeEach((to, from, next) => {
   var destination = to.fullPath.split('/')[1]
   var tokenPayload = to.fullPath.split('/')[2]
 
+  console.log('Checking token...')
+  console.log(localStorage.token)
+  console.log(tokenPayload)
+  if (localStorage.token != tokenPayload)
+    localStorage.removeItem('token')
+
   if (to.fullPath == '/error') {
     next()
   }

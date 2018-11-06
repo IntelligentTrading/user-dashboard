@@ -36,7 +36,7 @@ export default {
     return {
       txHash: "",
       signatureResult: "",
-      verificationText: "Verify your signature",
+      verificationText: "Next: Verify your signature",
       validating: false,
       exampleSignature: `{
   "address": "0xe345sdcace2107d017961bcfa29f3e4065f49e",

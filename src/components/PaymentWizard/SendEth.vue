@@ -42,8 +42,8 @@
           </button>
         </div>
         </el-row>
-        <el-row style='padding:30px'>
-          <el-button type="primary" @click="$emit('update:step', 1)">Sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
+        <el-row style='padding-top:30px'>
+          <el-button type="primary" @click="$emit('update:step', 1)">Next: sign your transaction <i class="fas fa-long-arrow-alt-right"></i></el-button>
         </el-row>
     </div>
 </template>
@@ -59,7 +59,7 @@ export default {
       eth_usd_rate: this.$store.state.eth_usd_rate,
       months: 1,
       label: "ETH",
-        preferredDuration:'3M'
+      preferredDuration: "3M"
     };
   },
   computed: {
@@ -78,7 +78,9 @@ export default {
       return "ETH";
     },
     subscriptionAmount: function() {
-      return (parseInt(this.preferredDuration.replace('M','')) * this.requiredTokens).toFixed(3)
+      return (
+        parseInt(this.preferredDuration.replace("M", "")) * this.requiredTokens
+      ).toFixed(3);
     }
   },
   methods: {
@@ -89,7 +91,7 @@ export default {
           message: `${this.ethAddress} copied to clipboard`,
           duration: 2000,
           offset: 100,
-          type: 'success'
+          type: "success"
         });
       });
     }
