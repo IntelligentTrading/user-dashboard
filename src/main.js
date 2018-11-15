@@ -20,8 +20,10 @@ router.beforeEach((to, from, next) => {
   var tokenPayload = to.fullPath.split('/')[2]
 
   console.log('Checking token...')
-  console.log(localStorage.token)
-  console.log(tokenPayload)
+  console.log('Local token:' + localStorage.token)
+  console.log('Payload token:' + tokenPayload)
+  console.log('Storage token:' + store.state.token)
+
   if (localStorage.token != tokenPayload && tokenPayload != null && tokenPayload != '')
     localStorage.removeItem('token')
 
@@ -29,7 +31,13 @@ router.beforeEach((to, from, next) => {
     next()
   }
   else if (destination != 'Me' && (!store.state.settings || !store.state.settings.subscriptions)) {
+    console.log('reloading token')
+
     if (localStorage.token) next('/Me/' + localStorage.token)
+    else if (store.state.token) {
+      console.log(`Reloading with store token ${store.state.token}`)
+      next('/Me/' + store.state.token)
+    }
     else if (tokenPayload && tokenPayload != '') {
       store.dispatch('storeToken', tokenPayload)
       next('/Me/' + localStorage.token)

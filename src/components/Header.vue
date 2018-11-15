@@ -11,6 +11,8 @@
             </el-row>
 </template>
 <script>
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
+
 export default {
   props: ["title", "navigation", "cancel"],
   methods: {
@@ -18,26 +20,27 @@ export default {
       this.$router.go(-1);
     },
     resetNav: function() {
-      this.$confirm(
-        "Abort and go to the home page?",
-        "Warning",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning"
-        }
-      )
+      this.$confirm("Abort and go to the home page?", "Warning", {
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancel",
+        type: "warning"
+      })
         .then(() => {
-          this.$router.push("/Main/" + localStorage.token);
+          this.$router.push("/Main/" + this.token);
         })
         .catch(() => {});
     }
+  },
+  computed: {
+    ...mapGetters([
+      "token"
+    ])
   }
 };
 </script>
 <style>
-.el-message-box{
-  width: 300px !important
+.el-message-box {
+  width: 300px !important;
 }
 </style>
 

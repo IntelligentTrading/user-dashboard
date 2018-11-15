@@ -66,6 +66,9 @@ export default new Vuex.Store({
         }
     },
     getters: {
+        token(state){
+            return state.token
+        },
         telegram_chat_id(state) {
             return state.telegram_chat_id
         },
