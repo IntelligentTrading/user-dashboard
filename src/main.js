@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
   console.log('Checking token...')
   console.log(localStorage.token)
   console.log(tokenPayload)
-  if (localStorage.token != tokenPayload)
+  if (localStorage.token != tokenPayload && tokenPayload != null && tokenPayload != '')
     localStorage.removeItem('token')
 
   if (to.fullPath == '/error') {
@@ -30,7 +30,7 @@ router.beforeEach((to, from, next) => {
   }
   else if (destination != 'Me' && (!store.state.settings || !store.state.settings.subscriptions)) {
     if (localStorage.token) next('/Me/' + localStorage.token)
-    else if (tokenPayload) {
+    else if (tokenPayload && tokenPayload != '') {
       store.dispatch('storeToken', tokenPayload)
       next('/Me/' + localStorage.token)
     } else next('/error')
