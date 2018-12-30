@@ -25,7 +25,7 @@ export default {
           this.$store.commit("signals", fulfillments[1]);
           this.$store.commit("itt_usd_rate", fulfillments[2]);
           this.$store.commit("subscriptionTemplates", fulfillments[3]);
-          this.$store.commit("eth_usd_rate", fulfillments[4][0].price_usd);
+          this.$store.commit("eth_usd_rate", fulfillments[4][0].priceUsd);
         })
         .then(() => {
           console.log("Redirecting to Main page...");
